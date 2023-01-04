@@ -1,0 +1,28 @@
+.Central {
+  margin-bottom: 8em;
+  margin-left: 20%;
+  margin-right: 20%;
+}
+.Card{
+  display: flex;
+  justify-content: center;
+}
+.StayThere {
+  margin-top: 3.25ex;
+}
+.PushTheButton{
+  margin-top: 20%;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 5em);
+}
+.SpaceAge{
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 72%;
+}
+.Card {
+  position: relative;
+  top: -10px;
+}
