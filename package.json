@@ -9,10 +9,19 @@
     "install": "cd server && npm i && cd ../client && npm i",
     "build": "cd client && npm run build"
   },
-  "keywords": ["sudoku", "game", "mongodb", "reac"],
+  "keywords": [
+    "sudoku",
+    "game",
+    "mongodb",
+    "react",
+    "node",
+    "express",
+    "daily-sudoku",
+    "DailySudoku"
+  ],
   "author": "MadeOfBees",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^5.1.0"
+    "concurrently": "^5.3.0"
   }
 }
