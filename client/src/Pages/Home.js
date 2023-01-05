@@ -6,7 +6,6 @@ const Home = () => {
   useKonami({onUnlock: () => toasty().trigger()});
   return (
     <div>
-      <h1>Home</h1>
       <MainApp />
     </div>
   );
