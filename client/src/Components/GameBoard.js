@@ -30,16 +30,15 @@ const GameBoard = (dataCrate) => {
         );
     };
     const cellChangeModal = (cellName) => {
-        setCurrentCell(cellName);
-        setModalOpen(true);
+        if (currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].shownValue === '⠀') {
+            setCurrentCell(cellName);
+            setModalOpen(true);
+        };
     };
     const handleModalSubmit = () => {
         const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
             return row.map((cell, cellIndex) => {
-                if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) {
-                    return { shownValue: modalValue, trueValue: cell.trueValue };
-                }
-                return cell;
+                if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: modalValue, trueValue: cell.trueValue }; } return cell;
             });
         });
         setCurrentPuzzle(updatedPuzzle);
@@ -47,9 +46,7 @@ const GameBoard = (dataCrate) => {
         setModalValue('');
         setCurrentCell('');
     };
-    
-    
-    
+
     return (
         <div>
             {drawBoard(currentPuzzle)}
