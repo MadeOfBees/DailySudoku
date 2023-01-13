@@ -3,38 +3,37 @@ import {Button, Modal, Box, Input } from '@mui/material';
 
 const GameBoard = (props) => {
     const style = props.style;
-    const puzzleWithShownVal = props.puzzle.map((row) => {return row.map((cell) => {return {shownValue: cell.isShown ? cell.value : '%',trueValue: cell.value,};});});
+    const puzzleWithShownVal = props.puzzle.map((row) => {return row.map((cell) => {return {shownValue: cell.isShown ? cell.value : '⠀',trueValue: cell.value,};});});
     const [currentPuzzle] = React.useState(puzzleWithShownVal);
     const [modalOpen, setModalOpen] = React.useState(false);
     const [modalValue, setModalValue] = React.useState('');
+    document.body.style.overflow = 'hidden';
     const handleModalClose = () => {
         setModalValue("");
         setModalOpen(false);
     };
-    const drawCell = (cell, cellIndex) => {
+    const drawCell = (cell, cellIndex, rowIndex) => {
+        const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex+1}`;
         return (
-            <Button
-                key={cellIndex}
-                onClick={() => {
-                    setModalOpen(true);
-                }}
-            >
+            <div key={cellIndex} className={cellName} style={{border: '1px solid black', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '2.5REM', height : "5REM"}} onClick={() => {setModalOpen(true);}}>
                 {cell.shownValue}
-            </Button>
+            </div>
         );
     };
     const drawBoard = (currentPuzzle) => {
-        return currentPuzzle.map((row, rowIndex) => {
-            return (
-                <div key={rowIndex}>
-                    {row.map((cell, cellIndex) => {
-                        return drawCell(cell, cellIndex);
-                    })}
-                </div>
-            );
-        });
+        return (
+            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr'}}>
+                {currentPuzzle.map((row, rowIndex) => {
+                    return row.map((cell, cellIndex) => {
+                        return (
+                            drawCell(cell, cellIndex, rowIndex)
+                        );
+                    });
+                })}
+            </div>
+        );
     };
-
+    
     const handleModalSubmit = () => {
 
     };
