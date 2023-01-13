@@ -2,12 +2,14 @@ import * as React from 'react';
 import { Button, Modal, Box, Input } from '@mui/material';
 document.body.style.overflow = 'hidden';
 
-const GameBoard = (props) => {
-    const style = props.style;
-    const puzzleWithShownVal = props.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, }; }); });
-    const [currentPuzzle] = React.useState(puzzleWithShownVal);
+const GameBoard = (dataCrate) => {
+    const style = dataCrate.style;
+    const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, }; }); });
+    const [currentPuzzle, setCurrentPuzzle] = React.useState(puzzleWithShownVal);
     const [modalOpen, setModalOpen] = React.useState(false);
     const [modalValue, setModalValue] = React.useState('');
+    const [currentCell, setCurrentCell] = React.useState('');
+
     const handleModalClose = () => {
         setModalValue("");
         setModalOpen(false);
@@ -28,12 +30,26 @@ const GameBoard = (props) => {
         );
     };
     const cellChangeModal = (cellName) => {
+        setCurrentCell(cellName);
         setModalOpen(true);
-        
     };
     const handleModalSubmit = () => {
-
+        const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
+            return row.map((cell, cellIndex) => {
+                if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) {
+                    return { shownValue: modalValue, trueValue: cell.trueValue };
+                }
+                return cell;
+            });
+        });
+        setCurrentPuzzle(updatedPuzzle);
+        setModalOpen(false);
+        setModalValue('');
+        setCurrentCell('');
     };
+    
+    
+    
     return (
         <div>
             {drawBoard(currentPuzzle)}
