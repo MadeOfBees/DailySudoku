@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button, Modal, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import './GameBoard.css'
 document.body.style.overflow = 'hidden';
 
 const GameBoard = (dataCrate) => {

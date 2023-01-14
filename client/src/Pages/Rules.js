@@ -19,6 +19,7 @@ function AboutUs() {
         <li>When you click on a number a Modal will pop up with a keypad. Click on the keypad to fill in the number.</li>
         <li>When you are done filling in the puzzle, click the "Check Answer" button to how you did</li>
         <li>Every day a new puzzle will be generated for you to solve.</li>
+        <li>Everyone in the world has the same puzzle at the same time so have fun competing with your friends!</li>
       </ul>
       <p>This is a website made by: <a href="https://github.com/MadeOfBees">MadeOfBees </a><GitHubIcon /></p>
       <p>Check out the source code on <a href="https://github.com/MadeOfBees/DailySudoku">GitHub</a></p>
