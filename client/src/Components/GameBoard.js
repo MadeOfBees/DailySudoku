@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Modal, Box } from '@mui/material';
-import {useTheme} from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 document.body.style.overflow = 'hidden';
 
 const GameBoard = (dataCrate) => {
@@ -11,11 +11,15 @@ const GameBoard = (dataCrate) => {
     const [modalOpen, setModalOpen] = React.useState(false);
     const [currentCell, setCurrentCell] = React.useState('');
     const handleModalClose = () => { setModalOpen(false); };
+    const [gradeModal, setGradeModal] = React.useState(false);
+    const [gradeOutput, setGradeOutput] = React.useState('');
+    const handleGradeModalClose = () => { setGradeModal(false); };
 
     const drawCell = (cell, cellIndex, rowIndex) => {
         const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
         return (
-<div key={cellIndex} id={cellName} style={{ border: '1px solid black', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '2.5REM', height: "5REM", color: !cell.isShown ? theme.palette.primary.main : theme.palette.text.secondary }} onClick={() => { cellChangeModal(cellName); }}>                {cell.shownValue}
+            <div key={cellIndex} id={cellName} style={{ border: '1px solid black', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '2.5REM', height: "5REM", color: !cell.isShown ? theme.palette.primary.main : theme.palette.text.secondary }} onClick={() => { cellChangeModal(cellName); }}>
+                {cell.shownValue}
             </div>
         );
     };
@@ -44,6 +48,33 @@ const GameBoard = (dataCrate) => {
         setCurrentPuzzle(updatedPuzzle);
         handleModalClose();
         setCurrentCell('');
+        checkBoardState(updatedPuzzle);
+    };
+
+    const handleWin = (GameStatus, puzzle) => {
+        makeFalseCellsRed(puzzle);
+        setGradeOutput(GameStatus ? 'You Win!' : 'You Lose!');
+        setGradeModal(true);
+    };
+
+    const makeFalseCellsRed = (updatedPuzzle) => {
+        updatedPuzzle.forEach((row, rowIndex) => {
+            row.forEach((cell, cellIndex) => {
+                const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
+                document.getElementById(cellName).style.color = (cell.shownValue.toString() !== cell.trueValue) ? theme.palette.error.main : theme.palette.success.main;
+            });
+        });
+    };
+    
+    const checkBoardState = (updatedPuzzle) => {
+        const allCellsHaveShownValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue !== '⠀'; }); });
+        if (allCellsHaveShownValues) {
+            if (updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue.toString() === cell.trueValue; }); })) {
+                handleWin(true, updatedPuzzle);
+            } else {
+                handleWin(false, updatedPuzzle);
+            }
+        }
     };
 
     return (
@@ -54,6 +85,11 @@ const GameBoard = (dataCrate) => {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr', gridGap: '5px' }}>
                         {Array.from({ length: 9 }, (_, i) => (<Button key={i} variant="contained" onClick={() => handleModalSubmit(i + 1)}>{i + 1}</Button>))}
                     </div>
+                </Box >
+            </Modal >
+            <Modal open={gradeModal} onClose={handleGradeModalClose}>
+                <Box sx={style}>
+                    <p>{gradeOutput}</p>
                 </Box >
             </Modal >
         </div>
