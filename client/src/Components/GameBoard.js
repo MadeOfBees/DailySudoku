@@ -1,19 +1,14 @@
 import * as React from 'react';
-import { Button, Modal, Box, Input } from '@mui/material';
+import { Button, Modal, Box } from '@mui/material';
 document.body.style.overflow = 'hidden';
 
 const GameBoard = (dataCrate) => {
     const style = dataCrate.style;
-    const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, }; }); });
+    const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, isShown: cell.isShown }; }); });
     const [currentPuzzle, setCurrentPuzzle] = React.useState(puzzleWithShownVal);
     const [modalOpen, setModalOpen] = React.useState(false);
-    const [modalValue, setModalValue] = React.useState('');
     const [currentCell, setCurrentCell] = React.useState('');
-
-    const handleModalClose = () => {
-        setModalValue("");
-        setModalOpen(false);
-    };
+    const handleModalClose = () => {setModalOpen(false);};
     const drawCell = (cell, cellIndex, rowIndex) => {
         const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
         return (
@@ -30,32 +25,31 @@ const GameBoard = (dataCrate) => {
         );
     };
     const cellChangeModal = (cellName) => {
-        if (currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].shownValue === '⠀') {
+        if (currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].shownValue === '⠀' || !currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].isShown) {
             setCurrentCell(cellName);
             setModalOpen(true);
         };
     };
-    const handleModalSubmit = () => {
+    const handleModalSubmit = (val) => {
         const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
             return row.map((cell, cellIndex) => {
-                if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: modalValue, trueValue: cell.trueValue }; } return cell;
+                if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: val, trueValue: cell.trueValue }; } return cell;
             });
         });
         setCurrentPuzzle(updatedPuzzle);
-        setModalOpen(false);
-        setModalValue('');
+        handleModalClose();
         setCurrentCell('');
     };
-
     return (
         <div>
             {drawBoard(currentPuzzle)}
             <Modal open={modalOpen} onClose={handleModalClose}>
                 <Box sx={style}>
-                    <Input value={modalValue} onChange={(event) => setModalValue(event.target.value)} />
-                    <Button onClick={handleModalSubmit}>Submit</Button>
-                </Box>
-            </Modal>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr', gridGap: '5px' }}>
+                        {Array.from({ length: 9 }, (_, i) => (<Button key={i} variant="contained" onClick={() => handleModalSubmit(i + 1)}>{i + 1}</Button>))}
+                    </div>
+                </Box >
+            </Modal >
         </div>
     );
 };
