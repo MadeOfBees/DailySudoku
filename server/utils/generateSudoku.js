@@ -55,7 +55,7 @@ function updatePuzzle(puzzle, row, col, num) {
     return newPuzzle.join('');
 }
 
-const genPuzzle = (solved, unsolved) => {
+function genPuzzle(solved, unsolved) {
     let puzzle = [];
     for (let i = 0; i < 9; i++) {
         let row = [];
@@ -69,3 +69,6 @@ const genPuzzle = (solved, unsolved) => {
     const finalFormattedPuzzle = stringPuzzle.replace(/(\r\n|\n|\r)/gm, "");
     return finalFormattedPuzzle;
 }
+
+const finalPuzzle = generateSudoku().then(console.log);
+return finalPuzzle;
