@@ -1,4 +1,4 @@
-const {Puzzle} = require('../models/puzzle');
+const {Puzzle} = require('../models/Puzzle');
 const {generateSudoku} = require('../utils/generateSudoku');
 
 const getAllPuzzles = async (req, res) => {
