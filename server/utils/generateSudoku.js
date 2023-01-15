@@ -70,4 +70,4 @@ function genPuzzle(solved, unsolved) {
     return finalFormattedPuzzle;
 }
 
-return generateSudoku();
+module.exports = { generateSudoku };
