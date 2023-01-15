@@ -70,5 +70,4 @@ function genPuzzle(solved, unsolved) {
     return finalFormattedPuzzle;
 }
 
-const finalPuzzle = generateSudoku().then(console.log);
-return finalPuzzle;
+return generateSudoku();
