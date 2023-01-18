@@ -1,5 +1,4 @@
-
-const { Schema, model } = require('mongoose');
+const {Schema, model} = require('mongoose');
 
 const puzzleSchema = new Schema({
     puzzleData: {
@@ -11,4 +10,8 @@ const puzzleSchema = new Schema({
         default: Date.now
     }
 });
-module.exports = model('Puzzle', puzzleSchema);
+
+const Puzzle = model('Puzzle', puzzleSchema);
+
+module.exports = {Puzzle};
+
