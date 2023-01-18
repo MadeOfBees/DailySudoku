@@ -46,7 +46,6 @@ const generateSudoku = (blankSpaces) => {
     }
     return puzzle;
   }
-  
 
 console.log(generateSudoku(20));
 module.exports = {generateSudoku}
