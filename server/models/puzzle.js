@@ -1,8 +1,9 @@
 
 const { Schema, model } = require('mongoose');
+
 const puzzleSchema = new Schema({
     puzzleData: {
-        type: Array,
+        type: String,
         required: true
     },
     timestamp: {
