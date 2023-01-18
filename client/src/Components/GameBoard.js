@@ -53,28 +53,21 @@ const GameBoard = (dataCrate) => {
     };
 
     const handleWin = (GameStatus, puzzle) => {
-        makeFalseCellsRed(puzzle);
+        handleEndGame(puzzle);
         setGradeOutput(GameStatus ? 'You Win!' : 'You Lose!');
         setGradeModal(true);
     };
 
-    const makeFalseCellsRed = (updatedPuzzle) => {
-        updatedPuzzle.forEach((row, rowIndex) => {
-            row.forEach((cell, cellIndex) => {
-                const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
-                document.getElementById(cellName).style.color = (cell.shownValue.toString() !== cell.trueValue) ? theme.palette.error.main : theme.palette.success.main;
-            });
-        });
+    const handleEndGame = (updatedPuzzle) => {
+        const updatedPuzzleWithShownVal = updatedPuzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.shownValue, trueValue: cell.trueValue, isShown: true }; }); });
+        setCurrentPuzzle(updatedPuzzleWithShownVal);
     };
     
     const checkBoardState = (updatedPuzzle) => {
         const allCellsHaveShownValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue !== '⠀'; }); });
         if (allCellsHaveShownValues) {
-            if (updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue.toString() === cell.trueValue; }); })) {
-                handleWin(true, updatedPuzzle);
-            } else {
-                handleWin(false, updatedPuzzle);
-            }
+            const allCellsHaveCorrectValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue === cell.trueValue; }); });
+            handleWin(allCellsHaveCorrectValues, updatedPuzzle);
         }
     };
 
