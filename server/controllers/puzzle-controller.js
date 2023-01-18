@@ -2,7 +2,6 @@ const {Puzzle} = require('../models/Puzzle.js');
 const {generateSudoku} = require('../utils/generateSudoku.js');
 
 module.exports = {
-    // Create a new puzzle, convert it from an array of array of objects to a string, and save it to the database
     newPuzzle: async (req, res) => {
         try {
             const puzzleArray = generateSudoku();

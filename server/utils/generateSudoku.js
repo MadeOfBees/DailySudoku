@@ -11,7 +11,6 @@ const generateSudoku = (blankSpaces) => {
     }
 
     const shuffle = (array) => {
-        // yates shuffle (like the Harlem Shuffle but more CS)
         let currentIndex = array.length,  randomIndex;
         while (currentIndex != 0) {
             randomIndex = Math.floor(Math.random() * currentIndex);
