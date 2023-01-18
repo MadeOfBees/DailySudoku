@@ -3,6 +3,8 @@ const path = require('path');
 const db = require('./config/connection');
 const routes = require('./routes');
 
+newPuzzleAtMidnight();
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -19,3 +21,29 @@ app.use(routes);
 db.once('open', () => {
   app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
 });
+
+function newPuzzleAtMidnight() {
+  var now = new Date();
+  var night = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1, 0, 0, 0
+  );
+  var msToMidnight = night.getTime() - now.getTime();
+  setTimeout(function() {
+      apiCall(); 
+      resetAtMidnight();
+  }, msToMidnight);
+}
+
+const apiCall = () => {
+  fetch('/api/puzzle/new', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(err => console.log(err));
+}

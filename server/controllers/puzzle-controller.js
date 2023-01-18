@@ -15,14 +15,11 @@ module.exports = {
     },
     currentPuzzle: async (req, res) => {
         try {
-            const puzzle = await Puzzle.find().sort({ timestamp: -1 }).limit(1);
-            const puzzleArray = JSON.parse(puzzle[0].puzzleData);
-            const puzzlesID = puzzles.map(puzzle => puzzle._id);
-            const puzzlesData = puzzlesArray.map((puzzle, index) => {
-                return { puzzle, id: puzzlesID[index] };
-            });
-            res.status(200).json({ message: 'Puzzle retrieved successfully', puzzle: puzzlesData });
-        } catch (error) {
+            const puzzle = await Puzzle.findOne().sort({ timestamp: -1 });
+            const puzzleArray = JSON.parse(puzzle.puzzleData);
+            res.status(200).json({ message: 'Puzzle retrieved successfully', puzzle: puzzleArray });
+        }
+        catch (error) {
             res.status(500).json({ message: 'Error retrieving puzzle', error });
         }
     },
@@ -42,7 +39,7 @@ module.exports = {
             const puzzlesArray = puzzles.map(puzzle => JSON.parse(puzzle.puzzleData));
             const puzzlesID = puzzles.map(puzzle => puzzle._id);
             const puzzlesData = puzzlesArray.map((puzzle, index) => {
-                return { puzzle, id: puzzlesID[index] };
+                return { puzzlesArray, id: puzzlesID[index] };
             }
             );
             res.status(200).json({ message: 'Puzzles retrieved successfully', puzzles: puzzlesData });
