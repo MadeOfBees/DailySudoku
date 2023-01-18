@@ -1,3 +1,4 @@
+
 const {Puzzle} = require('../models/Puzzle.js');
 const {generateSudoku} = require('../utils/generateSudoku.js');
 
