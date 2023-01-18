@@ -33,6 +33,7 @@ const generateSudoku = (blankSpaces) => {
       }
       return false;
     }
+
     fill();
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
@@ -47,5 +48,5 @@ const generateSudoku = (blankSpaces) => {
     return puzzle;
   }
 
-console.log(generateSudoku(20));
+console.log(generateSudoku(5));
 module.exports = {generateSudoku}
