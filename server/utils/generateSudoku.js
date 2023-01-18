@@ -1,91 +1,53 @@
-function generateSudoku(blankCount) {
-    let board = new Array(9).fill().map(() => new Array(9).fill(0));
-    if (backtrack(board)) {
-      let cells = [].concat(...board);
-      cells.sort(() => Math.random() - 0.5);
-      return formatStringsToObjects(board, blankCount);
-    }
-    return false;
-  }
-
-  function formatStringsToObjects(board, blankCount) {
-    // takes in a 2d array of strings and returns a 2d array of objects with a value and a boolean for whether or not the cell is shown to the user or not, pick those cells randomly
-    let cells = [].concat(...board);
-    cells.sort(() => Math.random() - 0.5);
-    let blankCells = cells.slice(0, blankCount);
-    let formattedBoard = board.map((row, rowIndex) => {
-        return row.map((cell, cellIndex) => {
-            return { value: cell, isShown: !blankCells.includes(cell) };
-        });
-    });
-    return formattedBoard;
-    }
-  
-  function backtrack(board) {
-    let emptyCell = findEmptyCell(board);
-    if (!emptyCell) {
+const generateSudoku = (blankSpaces) => {
+    const puzzle = Array(9).fill(null).map(() => Array(9).fill(null));
+    
+    const isValid = (row, col, num) => {
+      for (let i = 0; i < 9; i++) {
+        if (puzzle[row][i] === num || puzzle[i][col] === num || puzzle[3 * Math.floor(row / 3) + Math.floor(i / 3)][3 * Math.floor(col / 3) + i % 3] === num) {
+          return false;
+        }
+      }
       return true;
     }
-    let row = emptyCell.row;
-    let col = emptyCell.col;
-    for (let num = 1; num <= 9; num++) {
-      if (isValid(board, row, col, num)) {
-        board[row][col] = num;
-        if (backtrack(board)) {
-          return true;
-        }
-        board[row][col] = 0;
-      }
-    }
-    return false;
-  }
-  
-  function findEmptyCell(board) {
-    for (let row = 0; row < 9; row++) {
-      for (let col = 0; col < 9; col++) {
-        if (board[row][col] === 0) {
-          return {row, col};
-        }
-      }
-    }
-    return false;
-  }
-  
-  function isValid(board, row, col, num) {
-    return !usedInRow(board, row, num) && !usedInCol(board, col, num) && !usedInBox(board, row - row % 3, col - col % 3, num);
-  }
-  
-  function usedInRow(board, row, num) {
-    for (let col = 0; col < 9; col++) {
-      if (board[row][col] == num) {
-        return true;
-      }
-    }
-    return false;
-  }
-  
-  function usedInCol(board, col, num) {
-    for (let row = 0; row < 9; row++) {
-      if (board[row][col] == num) {
-        return true;
-      }
-    }
-    return false;
-  }
-  
-  function usedInBox(board, boxStartRow, boxStartCol, num) {
-    for (let row = 0; row < 3; row++) {
-      for (let col = 0; col < 3; col++) {
-        if (board[row + boxStartRow][col + boxStartCol] == num) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-  
-  
-// Uncomment to generate new puzzle by hand
-console.log(generateSudoku(10));
 
-module.exports = { generateSudoku };
+    const shuffle = (array) => {
+        // yates shuffle (like the Harlem Shuffle but more CS)
+        let currentIndex = array.length,  randomIndex;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+  
+    const fill = (row = 0, col = 0) => {
+      if (row === 9) return true;
+      if (puzzle[row][col]) return fill(col === 8 ? row + 1 : row, (col + 1) % 9);
+      const nums = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      for (let num of nums) {
+        if (isValid(row, col, num)) {
+          puzzle[row][col] = num;
+          if (fill(col === 8 ? row + 1 : row, (col + 1) % 9)) return true;
+          puzzle[row][col] = null;
+        }
+      }
+      return false;
+    }
+    fill();
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        puzzle[i][j] = { value: puzzle[i][j] || 'X', isShown: true }
+      }
+    }
+    for (let i = 0; i < blankSpaces; i++) {
+      let x = Math.floor(Math.random() * 9);
+      let y = Math.floor(Math.random() * 9);
+      puzzle[x][y].isShown = false;
+    }
+    return puzzle;
+  }
+  
+
+console.log(generateSudoku(20));
+module.exports = {generateSudoku}

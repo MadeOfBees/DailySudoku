@@ -1,12 +1,13 @@
-const { Schema } = require('mongoose');
 
+const { Schema, model } = require('mongoose');
 const puzzleSchema = new Schema({
-    puzzle: {
-        type: Object,
+    puzzleData: {
+        type: Array,
         required: true
     },
-    timeStamp: {
+    timestamp: {
         type: Date,
         default: Date.now
     }
 });
+module.exports = model('Puzzle', puzzleSchema);
