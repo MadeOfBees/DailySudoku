@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Button, Modal, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import './GameBoard.css'
-document.body.style.overflow = 'hidden';
 
 const GameBoard = (dataCrate) => {
     const theme = useTheme();
@@ -18,8 +17,11 @@ const GameBoard = (dataCrate) => {
 
     const drawCell = (cell, cellIndex, rowIndex) => {
         const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
+        let color = theme.palette.text.secondary;
+        if (!cell.isShown) color = theme.palette.primary.main;
+        if (cell.color) color = cell.color;
         return (
-            <div key={cellIndex} id={cellName} style={{ border: '1px solid black', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '2.5REM', height: "5REM", color: !cell.isShown ? theme.palette.primary.main : theme.palette.text.secondary }} onClick={() => { cellChangeModal(cellName); }}>
+            <div key={cellIndex} id={cellName} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '2.5REM', height: "REM", color: color }} onClick={() => { cellChangeModal(cellName); }}>
                 {cell.shownValue}
             </div>
         );
@@ -27,12 +29,21 @@ const GameBoard = (dataCrate) => {
 
     const drawBoard = (currentPuzzle) => {
         return (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr' }}>
-                {currentPuzzle.map((row, rowIndex) => { return row.map((cell, cellIndex) => { return (drawCell(cell, cellIndex, rowIndex)); }); })}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gridTemplateRows: 'repeat(9, 1fr)', gridColumnGap: 0, gridRowGap: 0 }}>
+                {currentPuzzle.flat().map((cell, index) => { 
+                    const rowIndex = Math.floor(index / 9);
+                    const cellIndex = index % 9;
+                    const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
+                    return (
+                        <div key={index} id={cellName} style={{border: 'thin solid black', borderRight: (cellIndex === 2 || cellIndex === 5) ? 'thick solid black' : 'thin solid black', borderBottom: (rowIndex === 2 || rowIndex === 5) ? 'thick solid black' : 'thin solid black'}} onClick={() => { cellChangeModal(cellName); }}>
+                            {drawCell(cell, cellIndex, rowIndex)}
+                        </div>
+                    );
+                })}
             </div>
         );
     };
-
+    
     const cellChangeModal = (cellName) => {
         if (currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].shownValue === '⠀' || !currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].isShown) {
             setCurrentCell(cellName);
@@ -52,17 +63,34 @@ const GameBoard = (dataCrate) => {
         checkBoardState(updatedPuzzle);
     };
 
-    const handleWin = (GameStatus, puzzle) => {
-        handleEndGame(puzzle);
-        setGradeOutput(GameStatus ? 'You Win!' : 'You Lose!');
-        setGradeModal(true);
+    const handleWin = (gameStatus, puzzle) => {
+        if (gameStatus) {
+            handleWinGame(puzzle);
+            setGradeOutput('You Win!');
+            setGradeModal(true);
+        } else {
+            handleLoseGame(puzzle);
+            setGradeOutput('You Lose!');
+            setGradeModal(true);
+        }
     };
 
-    const handleEndGame = (updatedPuzzle) => {
-        const updatedPuzzleWithShownVal = updatedPuzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.shownValue, trueValue: cell.trueValue, isShown: true }; }); });
-        setCurrentPuzzle(updatedPuzzleWithShownVal);
+    const handleWinGame = (puzzle) => {
+        const newPuzzle = puzzle.map((row) => { return row.map((cell) => { return { ...cell, color: 'green', isShown: true }; }); });
+        setCurrentPuzzle(newPuzzle);
     };
-    
+
+    const handleLoseGame = (puzzle) => {
+        const newPuzzle = puzzle.map((row) => {
+            return row.map((cell) => {
+                if (!cell.isShown) return { ...cell, color: cell.trueValue === cell.shownValue ? 'green' : 'red', isShown: true };
+                else return cell;
+            });
+        });
+        setCurrentPuzzle(newPuzzle);
+    };
+
+
     const checkBoardState = (updatedPuzzle) => {
         const allCellsHaveShownValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue !== '⠀'; }); });
         if (allCellsHaveShownValues) {
