@@ -21,12 +21,28 @@ app.use(routes);
 db.once('open', () => {
   app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
 });
-const i = 0
+
+
+const apiCall = () => {
+  // run newPuzzle api call
+  try {
+    fetch('/api/puzzles/new', {
+      method: 'POST',
+      body: JSON.stringify({}),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+var i = 0
 
 // the first time this is opened run the api call to create a new puzzle
-if (i = 0) {
+if (i === 0) {
   apiCall();
-  i++;
+  i = 1;
 }
 
 
@@ -37,21 +53,10 @@ function newPuzzleAtMidnight() {
       now.getMonth(),
       now.getDate() + 1, 0, 0, 0
   );
+
   var msToMidnight = night.getTime() - now.getTime();
   setTimeout(function() {
       apiCall(); 
       resetAtMidnight();
   }, msToMidnight);
-}
-
-const apiCall = () => {
-  fetch('/api/puzzle/new', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(err => console.log(err));
 }
