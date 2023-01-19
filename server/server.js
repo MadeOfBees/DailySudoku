@@ -21,6 +21,14 @@ app.use(routes);
 db.once('open', () => {
   app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
 });
+const i = 0
+
+// the first time this is opened run the api call to create a new puzzle
+if (i = 0) {
+  apiCall();
+  i++;
+}
+
 
 function newPuzzleAtMidnight() {
   var now = new Date();
