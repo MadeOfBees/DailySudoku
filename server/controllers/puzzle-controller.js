@@ -4,7 +4,7 @@ const {generateSudoku} = require('../utils/generateSudoku.js');
 module.exports = {
     newPuzzle: async (req, res) => {
         try {
-            const puzzleArray = generateSudoku();
+            const puzzleArray = generateSudoku(10);
             const puzzleData = JSON.stringify(puzzleArray);
             const newPuzzle = new Puzzle({ puzzleData });
             await newPuzzle.save();

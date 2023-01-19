@@ -1,5 +1,4 @@
 const generateSudoku = (blankSpaces) => {
-    blankSpaces = blankSpaces || 5;
     const puzzle = Array(9).fill(null).map(() => Array(9).fill(null));
     
     const isValid = (row, col, num) => {
