@@ -1,4 +1,5 @@
 const generateSudoku = (blankSpaces) => {
+    blankSpaces = blankSpaces || 5;
     const puzzle = Array(9).fill(null).map(() => Array(9).fill(null));
     
     const isValid = (row, col, num) => {
@@ -33,20 +34,18 @@ const generateSudoku = (blankSpaces) => {
       }
       return false;
     }
-
     fill();
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
-        puzzle[i][j] = { value: puzzle[i][j] || 'X', isShown: true }
-      }
-    }
+    const puzzleWithShown = puzzle.map((row) => {
+        return row.map((cell) => {
+            return { value:cell, isShown: true };
+        });
+    });
     for (let i = 0; i < blankSpaces; i++) {
-      let x = Math.floor(Math.random() * 9);
-      let y = Math.floor(Math.random() * 9);
-      puzzle[x][y].isShown = false;
+        const row = Math.floor(Math.random() * 9);
+        const col = Math.floor(Math.random() * 9);
+        puzzleWithShown[row][col].isShown = false;
     }
-    return puzzle;
-  }
+    return puzzleWithShown;
+}
 
-console.log(generateSudoku(5));
 module.exports = {generateSudoku}

@@ -1,111 +1,25 @@
 import * as React from 'react';
 import GameBoard from '../Components/GameBoard';
 const style = { position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4, };
+const api = "http://localhost:3001/api/puzzles/current";
+
 export default function MainApp() {
-    const puzzle = [
-        [
-          { value: 9, isShown: true },
-          { value: 2, isShown: true },
-          { value: 8, isShown: true },
-          { value: 6, isShown: true },
-          { value: 1, isShown: true },
-          { value: 3, isShown: false },
-          { value: 7, isShown: false },
-          { value: 4, isShown: true },
-          { value: 5, isShown: true }
-        ],
-        [
-          { value: 4, isShown: true },
-          { value: 3, isShown: true },
-          { value: 6, isShown: true },
-          { value: 8, isShown: true },
-          { value: 7, isShown: true },
-          { value: 5, isShown: true },
-          { value: 2, isShown: true },
-          { value: 1, isShown: true },
-          { value: 9, isShown: true }
-        ],
-        [
-          { value: 5, isShown: true },
-          { value: 1, isShown: true },
-          { value: 7, isShown: true },
-          { value: 9, isShown: true },
-          { value: 4, isShown: true },
-          { value: 2, isShown: true },
-          { value: 8, isShown: true },
-          { value: 3, isShown: true },
-          { value: 6, isShown: true }
-        ],
-        [
-          { value: 6, isShown: true },
-          { value: 9, isShown: true },
-          { value: 1, isShown: true },
-          { value: 2, isShown: true },
-          { value: 5, isShown: true },
-          { value: 7, isShown: true },
-          { value: 3, isShown: true },
-          { value: 8, isShown: true },
-          { value: 4, isShown: true }
-        ],
-        [
-          { value: 3, isShown: true },
-          { value: 4, isShown: true },
-          { value: 5, isShown: true },
-          { value: 1, isShown: true },
-          { value: 9, isShown: true },
-          { value: 8, isShown: true },
-          { value: 6, isShown: true },
-          { value: 2, isShown: true },
-          { value: 7, isShown: true }
-        ],
-        [
-          { value: 7, isShown: true },
-          { value: 8, isShown: true },
-          { value: 2, isShown: true },
-          { value: 4, isShown: true },
-          { value: 3, isShown: true },
-          { value: 6, isShown: true },
-          { value: 5, isShown: true },
-          { value: 9, isShown: true },
-          { value: 1, isShown: true }
-        ],
-        [
-          { value: 2, isShown: true },
-          { value: 5, isShown: true },
-          { value: 4, isShown: true },
-          { value: 7, isShown: true },
-          { value: 8, isShown: true },
-          { value: 1, isShown: true },
-          { value: 9, isShown: true },
-          { value: 6, isShown: true },
-          { value: 3, isShown: true }
-        ],
-        [
-          { value: 8, isShown: true },
-          { value: 7, isShown: true },
-          { value: 9, isShown: true },
-          { value: 3, isShown: true },
-          { value: 6, isShown: true },
-          { value: 4, isShown: true },
-          { value: 1, isShown: true },
-          { value: 5, isShown: true },
-          { value: 2, isShown: true }
-        ],
-        [
-          { value: 1, isShown: true },
-          { value: 6, isShown: true },
-          { value: 3, isShown: true },
-          { value: 5, isShown: true },
-          { value: 2, isShown: true },
-          { value: 9, isShown: true },
-          { value: 4, isShown: true },
-          { value: 7, isShown: true },
-          { value: 8, isShown: true }
-        ]
-      ]
-    return (
-        <div >
-            <GameBoard style={style} puzzle={puzzle} />
-        </div>
-    );
+  // try to fetch the current puzzle from the server (api/puzzles/current), if it is successful, render the gameboard with the puzzle as a prop and the style as a prop, otherwise console.log the error
+  const [puzzle, setPuzzle] = React.useState([]);
+  React.useEffect(() => {
+    fetch(api)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data.puzzle);
+        setPuzzle(data.puzzle);
+      })
+      .catch((err) => console.log(err));
+  }
+  , []);
+
+  return (
+    <div>
+      {puzzle.length > 0 ? <GameBoard puzzle={puzzle} style={style} /> : null}
+    </div>
+  );
 }
