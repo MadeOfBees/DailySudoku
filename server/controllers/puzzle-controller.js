@@ -1,5 +1,5 @@
-const {Puzzle} = require('../models/puzzle.js');
-const {generateSudoku} = require('../utils/generateSudoku.js');
+const {generateSudoku} = require('../utils/generateSudoku');
+const {Puzzle} = require('../models/puzzle');
 
 module.exports = {
     newPuzzle: async (req, res) => {
