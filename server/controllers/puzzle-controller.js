@@ -15,7 +15,6 @@ module.exports = {
     },
     currentPuzzle: async (req, res) => {
         try {
-            // try to find the most recent puzzle, if it doesn't exist, create a new one and return it instead
             const puzzle = await Puzzle.findOne().sort({ _id: -1 });
             if (!puzzle) {
                 const puzzleArray = generateSudoku();
