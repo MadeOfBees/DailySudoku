@@ -1,4 +1,4 @@
-const {Puzzle} = require('../models/Puzzle.js');
+const {Puzzle} = require('../models/puzzle.js');
 const {generateSudoku} = require('../utils/generateSudoku.js');
 
 module.exports = {
