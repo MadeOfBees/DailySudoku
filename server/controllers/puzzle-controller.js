@@ -1,5 +1,5 @@
-const {generateSudoku} = require('../utils/generateSudoku');
-const {Puzzle} = require('../models/puzzle');
+const { generateSudoku } = require('../utils/generateSudoku');
+const { Puzzle } = require('../models/puzzle');
 
 module.exports = {
     newPuzzle: async (req, res) => {
@@ -16,6 +16,10 @@ module.exports = {
     currentPuzzle: async (req, res) => {
         try {
             const puzzle = await Puzzle.findOne().sort({ _id: -1 });
+            const puzzleCount = await Puzzle.countDocuments();
+            if (puzzleCount > 5) {
+                await Puzzle.deleteMany().sort({ _id: 1 }).limit(3);
+            }
             if (!puzzle) {
                 const puzzleArray = generateSudoku();
                 const puzzleData = JSON.stringify(puzzleArray);
@@ -24,11 +28,20 @@ module.exports = {
                 res.status(201).json({ message: 'Puzzle created successfully', puzzle: newPuzzle });
             }
             else {
-                const puzzleArray = JSON.parse(puzzle.puzzleData);
-                res.status(200).json({ message: 'Puzzle retrieved successfully', puzzle: puzzleArray });
+                const puzzleAge = Date.now() - puzzle.createdAt;
+                if (puzzleAge < 86400000) {
+                    const puzzleArray = JSON.parse(puzzle.puzzleData);
+                    res.status(200).json({ message: 'Puzzle retrieved successfully', puzzle: puzzleArray });
+                }
+                else {
+                    const puzzleArray = generateSudoku();
+                    const puzzleData = JSON.stringify(puzzleArray);
+                    const newPuzzle = new Puzzle({ puzzleData });
+                    await newPuzzle.save();
+                    res.status(201).json({ message: 'Puzzle created successfully', puzzle: newPuzzle });
+                }
             }
-        }
-        catch (error) {
+        } catch (error) {
             res.status(500).json({ message: 'Error retrieving puzzle', error });
         }
     },
