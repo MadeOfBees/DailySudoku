@@ -4,7 +4,7 @@ const {generateSudoku} = require('../utils/generateSudoku.js');
 module.exports = {
     newPuzzle: async (req, res) => {
         try {
-            const puzzleArray = generateSudoku(10);
+            const puzzleArray = generateSudoku();
             const puzzleData = JSON.stringify(puzzleArray);
             const newPuzzle = new Puzzle({ puzzleData });
             await newPuzzle.save();
@@ -15,9 +15,19 @@ module.exports = {
     },
     currentPuzzle: async (req, res) => {
         try {
-            const puzzle = await Puzzle.findOne().sort({ timestamp: -1 });
-            const puzzleArray = JSON.parse(puzzle.puzzleData);
-            res.status(200).json({ message: 'Puzzle retrieved successfully', puzzle: puzzleArray });
+            // try to find the most recent puzzle, if it doesn't exist, create a new one and return it instead
+            const puzzle = await Puzzle.findOne().sort({ _id: -1 });
+            if (!puzzle) {
+                const puzzleArray = generateSudoku();
+                const puzzleData = JSON.stringify(puzzleArray);
+                const newPuzzle = new Puzzle({ puzzleData });
+                await newPuzzle.save();
+                res.status(201).json({ message: 'Puzzle created successfully', puzzle: newPuzzle });
+            }
+            else {
+                const puzzleArray = JSON.parse(puzzle.puzzleData);
+                res.status(200).json({ message: 'Puzzle retrieved successfully', puzzle: puzzleArray });
+            }
         }
         catch (error) {
             res.status(500).json({ message: 'Error retrieving puzzle', error });
