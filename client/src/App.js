@@ -1,4 +1,3 @@
-// import home page
 import Home from './Pages/Home';
 import Rules from './Pages/Rules';
 import React from 'react';
