@@ -16,16 +16,6 @@ module.exports = {
     currentPuzzle: async (req, res) => {
         try {
             const puzzle = await Puzzle.findOne().sort({ _id: -1 });
-            const puzzleCount = await Puzzle.countDocuments();
-            if (puzzleCount > 3) {
-                const oldestPuzzle = await Puzzle.findOne().sort({ _id: 1 });
-                await Puzzle.findByIdAndDelete(oldestPuzzle._id);
-                const puzzleArray = generateSudoku();
-                const puzzleData = JSON.stringify(puzzleArray);
-                const newPuzzle = new Puzzle({ puzzleData });
-                await newPuzzle.save();
-                res.status(202).json({ message: 'Puzzle created successfully', puzzle: newPuzzle });
-            }
             if (!puzzle) {
                 const puzzleArray = generateSudoku();
                 const puzzleData = JSON.stringify(puzzleArray);
