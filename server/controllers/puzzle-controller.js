@@ -28,8 +28,9 @@ module.exports = {
                 res.status(201).json({ message: 'Puzzle created successfully', puzzle: newPuzzle });
             }
             else {
-                const puzzleAge = Date.now() - puzzle.createdAt;
-                if (puzzleAge < 86400000) {
+                const hourOfLastPuzzle = new Date(puzzle.createdAt).getUTCHours();
+                const timeForANewPuzzle = hourOfLastPuzzle < 12;
+                if (!timeForANewPuzzle) {
                     const puzzleArray = JSON.parse(puzzle.puzzleData);
                     res.status(200).json({ message: 'Puzzle retrieved successfully', puzzle: puzzleArray });
                 }
