@@ -4,6 +4,7 @@ const { Puzzle } = require('../models/puzzle');
 module.exports = {
     newPuzzle: async (req, res) => {
         try {
+            await Puzzle.deleteMany({});
             const puzzleArray = generateSudoku();
             const puzzleData = JSON.stringify(puzzleArray);
             const newPuzzle = new Puzzle({ puzzleData });
