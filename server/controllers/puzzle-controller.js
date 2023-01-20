@@ -17,8 +17,14 @@ module.exports = {
         try {
             const puzzle = await Puzzle.findOne().sort({ _id: -1 });
             const puzzleCount = await Puzzle.countDocuments();
-            if (puzzleCount > 5) {
-                await Puzzle.deleteMany().sort({ _id: 1 }).limit(3);
+            if (puzzleCount > 3) {
+                const oldestPuzzle = await Puzzle.findOne().sort({ _id: 1 });
+                await Puzzle.findByIdAndDelete(oldestPuzzle._id);
+                const puzzleArray = generateSudoku();
+                const puzzleData = JSON.stringify(puzzleArray);
+                const newPuzzle = new Puzzle({ puzzleData });
+                await newPuzzle.save();
+                res.status(202).json({ message: 'Puzzle created successfully', puzzle: newPuzzle });
             }
             if (!puzzle) {
                 const puzzleArray = generateSudoku();
@@ -40,7 +46,7 @@ module.exports = {
                     const puzzleData = JSON.stringify(puzzleArray);
                     const newPuzzle = new Puzzle({ puzzleData });
                     await newPuzzle.save();
-                    res.status(201).json({ message: 'Puzzle created successfully', puzzle: newPuzzle });
+                    res.status(202).json({ message: 'Puzzle created successfully', puzzle: newPuzzle });
                 }
             }
         } catch (error) {
