@@ -4,7 +4,7 @@ const style = { position: 'absolute', top: '50%', left: '50%', transform: 'trans
 export default function MainApp() {
   const [puzzle, setPuzzle] = React.useState();
   React.useEffect(() => {
-    fetch("http://localhost:3001/api/puzzles/current/")
+    fetch("api/puzzles/current/")
       .then((res) => res.json())
       .then((data) => {
         if (data.message === "Puzzle retrieved successfully") {
