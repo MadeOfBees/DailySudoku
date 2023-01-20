@@ -29,7 +29,8 @@ module.exports = {
             }
             else {
                 const hourOfLastPuzzle = new Date(puzzle.createdAt).getUTCHours();
-                const timeForANewPuzzle = hourOfLastPuzzle < 12;
+                const hourOfLastPuzzleEST = hourOfLastPuzzle - 5 < 0 ? hourOfLastPuzzle + 19 : hourOfLastPuzzle - 5;
+                const timeForANewPuzzle = hourOfLastPuzzleEST < new Date().getUTCHours();
                 if (!timeForANewPuzzle) {
                     const puzzleArray = JSON.parse(puzzle.puzzleData);
                     res.status(200).json({ message: 'Puzzle retrieved successfully', puzzle: puzzleArray });
@@ -45,5 +46,6 @@ module.exports = {
         } catch (error) {
             res.status(500).json({ message: 'Error retrieving puzzle', error });
         }
-    }
+    },
+
 }
