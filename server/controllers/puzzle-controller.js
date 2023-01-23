@@ -5,12 +5,13 @@ require('dotenv').config();
 module.exports = {
     newPuzzle: async (req, res) => {
         try {
+            const blank = req.params.num ? req.params.blank : 42;
             if (req.body.password === process.env.SPASSWORD) {
-            const puzzleArray = generateSudoku();
+            const puzzleArray = generateSudoku(blank);
             const puzzleData = JSON.stringify(puzzleArray);
             const newPuzzle = new Puzzle({ puzzleData });
             await newPuzzle.save();
-            res.status(201).json({ message: 'Puzzle created successfully', puzzle: newPuzzle });
+            res.status(201).json({ message: `Puzzle with ID of:${newPuzzle._id} created successfully`, puzzle: puzzleArray });
             }
             else {
                 res.status(401).json({ message: 'Unauthorized user, access denied.' });
