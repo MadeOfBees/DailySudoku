@@ -14,12 +14,32 @@ const GameBoard = (dataCrate) => {
     const [gradeModal, setGradeModal] = React.useState(false);
     const [gradeOutput, setGradeOutput] = React.useState('');
     const handleGradeModalClose = () => { setGradeModal(false); };
+    const [resetModal, setResetModal] = React.useState(false);
+    const handleResetModalClose = () => { setResetModal(false); };
+    
+    const handleReset = () => {
+        const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, isShown: cell.isShown }; }); });
+        setCurrentPuzzle(puzzleWithShownVal);
+        setResetModal(false);
+    };
 
-    const drawCell = (cell, cellIndex, rowIndex, textSize) => {
+    React.useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'r') {
+                setResetModal(!resetModal);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [resetModal]);
+
+    const drawCell = (cell, cellIndex, rowIndex, textSize, textColor) => {
         const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
-const color = !cell.isShown ? theme.palette.primary.main : cell.color ? cell.color : theme.palette.text.secondary;
+        const color = !cell.isShown ? theme.palette.primary.main : cell.color ? cell.color : textColor;
         return (
-            <div key={cellIndex} id={cellName} style={{display: 'flex', justifyContent: 'center', color: color, fontSize:textSize}} onClick={() => { cellChangeModal(cellName); }}>
+            <div key={cellIndex} id={cellName} style={{ display: 'flex', justifyContent: 'center', color: color, fontSize: textSize }} onClick={() => { cellChangeModal(cellName); }}>
                 {cell.shownValue}
             </div>
         );
@@ -28,25 +48,25 @@ const color = !cell.isShown ? theme.palette.primary.main : cell.color ? cell.col
     const drawBoard = (currentPuzzle) => {
         const divsize = (window.innerWidth > 900) ? '600px' : (window.innerWidth > 600) ? '400px' : '250px';
         const textSize = (window.innerWidth > 900) ? '2.5em' : (window.innerWidth > 600) ? '1.5em' : '1em';
-        const borderColor = theme.palette.mode === 'dark' ? "DarkGray" : "black";
-        const thinBorder = `thin solid ${borderColor}`
-        const thickBorder = `thick solid ${borderColor}`
+        const boardCrayon = theme.palette.mode === 'dark' ? "DarkGray" : "black";
+        const thinBorder = `thin solid ${boardCrayon}`
+        const thickBorder = `thick solid ${boardCrayon}`
         return (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gridTemplateRows: 'repeat(9, 1fr)', gridColumnGap: 0, gridRowGap: 0, width: divsize, height: divsize, border: thickBorder }}>
-                {currentPuzzle.flat().map((cell, index) => { 
+                {currentPuzzle.flat().map((cell, index) => {
                     const rowIndex = Math.floor(index / 9);
                     const cellIndex = index % 9;
                     const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
                     return (
-                        <div key={index} id={cellName} style={{border: thinBorder, borderRight: (cellIndex === 2 || cellIndex === 5) ? thickBorder : thinBorder, borderBottom: (rowIndex === 2 || rowIndex === 5) ? thickBorder : thinBorder}} onClick={() => { cellChangeModal(cellName); }}>
-                            {drawCell(cell, cellIndex, rowIndex, textSize)}
+                        <div key={index} id={cellName} style={{ border: thinBorder, borderRight: (cellIndex === 2 || cellIndex === 5) ? thickBorder : thinBorder, borderBottom: (rowIndex === 2 || rowIndex === 5) ? thickBorder : thinBorder }} onClick={() => { cellChangeModal(cellName); }}>
+                            {drawCell(cell, cellIndex, rowIndex, textSize, boardCrayon)}
                         </div>
                     );
                 })}
             </div>
         );
     };
-    
+
     const cellChangeModal = (cellName) => {
         if (currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].shownValue === '⠀' || !currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].isShown) {
             setCurrentCell(cellName);
@@ -79,14 +99,14 @@ const color = !cell.isShown ? theme.palette.primary.main : cell.color ? cell.col
     };
 
     const handleWinGame = (puzzle) => {
-        const newPuzzle = puzzle.map((row) => { return row.map((cell) => { return { ...cell, color: 'green', isShown: true }; }); });
+        const newPuzzle = puzzle.map((row) => { return row.map((cell) => { return { ...cell, color: 'Chartreuse', isShown: true }; }); });
         setCurrentPuzzle(newPuzzle);
     };
 
     const handleLoseGame = (puzzle) => {
         const newPuzzle = puzzle.map((row) => {
             return row.map((cell) => {
-                if (!cell.isShown) return { ...cell, color: cell.trueValue === cell.shownValue ? 'green' : 'red', isShown: true };
+                if (!cell.isShown) return { ...cell, color: cell.trueValue === cell.shownValue ? 'Chartreuse' : 'OrangeRed', isShown: true };
                 else return cell;
             });
         });
@@ -103,18 +123,27 @@ const color = !cell.isShown ? theme.palette.primary.main : cell.color ? cell.col
     };
 
     return (
-        <div style={{ top: '5%', position: 'absolute'}}>
+        <div style={{ top: '5%', position: 'absolute' }}>
             {drawBoard(currentPuzzle)}
             <Modal open={modalOpen} onClose={handleModalClose}>
                 <Box sx={toBeSquare}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr', gridGap: '5px'}}>
-                        {Array.from({ length: 9 }, (_, i) => (<Button style={{width: "75px", height:"75px"}} key={i} variant="contained" onClick={() => handleModalSubmit(i + 1)}>{i + 1}</Button>))}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr', gridGap: '5px' }}>
+                        {Array.from({ length: 9 }, (_, i) => (<Button style={{ width: "75px", height: "75px" }} key={i} variant="contained" onClick={() => handleModalSubmit(i + 1)}>{i + 1}</Button>))}
                     </div>
                 </Box >
             </Modal >
             <Modal open={gradeModal} onClose={handleGradeModalClose}>
                 <Box sx={style}>
                     <h1>{gradeOutput}</h1>
+                </Box >
+            </Modal >
+            <Modal open={resetModal} onClose={handleResetModalClose}>
+                <Box sx={style} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <h3>Are you sure you want to reset?</h3>
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', width: '100%' }}>
+                        <Button style={{ width: "100px", height: "50px" }} variant="contained" onClick={handleReset}>Yes</Button>
+                        <Button style={{ width: "100px", height: "50px" }} variant="contained" onClick={handleResetModalClose}>No</Button>
+                    </div>
                 </Box >
             </Modal >
         </div>
