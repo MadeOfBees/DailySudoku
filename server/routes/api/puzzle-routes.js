@@ -3,6 +3,8 @@ const {newPuzzle, currentPuzzle, getPuzzleByID, getAllPuzzles, deletePuzzleByID,
 
 router.route('/new').post(newPuzzle);
 
+router.route('/new/:num').post(newPuzzle);
+
 router.route('/current').get(currentPuzzle);
 
 router.route('/:id').get(getPuzzleByID).delete(deletePuzzleByID);

@@ -46,8 +46,8 @@ const GameBoard = (dataCrate) => {
     };
 
     const drawBoard = (currentPuzzle) => {
-        const divsize = (window.innerWidth > 900) ? '600px' : (window.innerWidth > 600) ? '400px' : '250px';
-        const textSize = (window.innerWidth > 900) ? '2.5em' : (window.innerWidth > 600) ? '1.5em' : '1em';
+        const divsize = (window.innerWidth > 900) ? '650px' : (window.innerWidth > 550) ? '500px' : '400px';
+        const textSize = (window.innerWidth > 900) ? '2.8em' : (window.innerWidth > 550) ? '2.1em' : '1.6em';
         const boardCrayon = theme.palette.mode === 'dark' ? "DarkGray" : "black";
         const thinBorder = `thin solid ${boardCrayon}`
         const thickBorder = `thick solid ${boardCrayon}`
@@ -106,7 +106,7 @@ const GameBoard = (dataCrate) => {
     const handleLoseGame = (puzzle) => {
         const newPuzzle = puzzle.map((row) => {
             return row.map((cell) => {
-                if (!cell.isShown) return { ...cell, color: cell.trueValue === cell.shownValue ? 'Chartreuse' : 'OrangeRed', isShown: true };
+                if (!cell.isShown) return { ...cell, color: cell.trueValue === cell.shownValue ? 'Chartreuse' : 'red', isShown: true };
                 else return cell;
             });
         });
