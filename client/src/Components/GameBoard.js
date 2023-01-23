@@ -123,7 +123,7 @@ const GameBoard = (dataCrate) => {
     };
 
     return (
-        <div className= "TheBoard">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '5%' }}>
             {drawBoard(currentPuzzle)}
             <Modal open={modalOpen} onClose={handleModalClose}>
                 <Box sx={toBeSquare}>
