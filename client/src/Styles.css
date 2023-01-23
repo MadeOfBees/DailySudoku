@@ -35,3 +35,15 @@
   height: 875px;
 }
 
+.TheBoard
+{
+  position: absolute;
+  top: 5%;
+}
+
+@media (max-height: 450px) {
+  .TheBoard {
+    height: 115%;
+  }
+}
+

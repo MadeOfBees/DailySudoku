@@ -46,8 +46,8 @@ const GameBoard = (dataCrate) => {
     };
 
     const drawBoard = (currentPuzzle) => {
-        const divsize = (window.innerWidth > 900) ? '650px' : (window.innerWidth > 550) ? '500px' : '376px';
-        const textSize = (window.innerWidth > 900) ? '2.8em' : (window.innerWidth > 550) ? '2.1em' : '1.4em';
+        const divsize = (window.innerWidth > 900) ? '650px' : (window.innerWidth > 550) ? '500px' : '350px';
+        const textSize = (window.innerWidth > 900) ? '2.8em' : (window.innerWidth > 550) ? '2.1em' : '1.3em';
         const boardCrayon = theme.palette.mode === 'dark' ? "DarkGray" : "black";
         const thinBorder = `thin solid ${boardCrayon}`
         const thickBorder = `thick solid ${boardCrayon}`
@@ -123,7 +123,7 @@ const GameBoard = (dataCrate) => {
     };
 
     return (
-        <div style={{ top: '5%', position: 'absolute' }}>
+        <div className= "TheBoard">
             {drawBoard(currentPuzzle)}
             <Modal open={modalOpen} onClose={handleModalClose}>
                 <Box sx={toBeSquare}>
