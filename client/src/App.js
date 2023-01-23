@@ -33,7 +33,7 @@ function App() {
               element={<Home />}
             />
             <Route
-              path="/dailySudoku"
+              path="/DailySudoku"
               element={<Home />}
             />
             <Route
@@ -45,7 +45,7 @@ function App() {
         <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0}} elevation={3}>
         <BottomNavigation showLabels>
           <BottomNavigationAction component={Link} to="/Rules" label="How to Play" icon={<ContactPageIcon />} />
-          <BottomNavigationAction component={Link} to="/dailySudoku" label="Home" icon={<HomeIcon />} />
+          <BottomNavigationAction component={Link} to="/DailySudoku" label="Home" icon={<HomeIcon />} />
           <BottomNavigationAction onClick={colorMode.toggleColorMode} label="Toggle Dark-Mode" icon={theme.palette.mode === 'dark' ? <ToggleOffIcon /> : <ToggleOnIcon />} />
         </BottomNavigation>
         </Paper>
