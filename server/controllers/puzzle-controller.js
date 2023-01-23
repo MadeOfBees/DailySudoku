@@ -30,11 +30,11 @@ module.exports = {
                 const newPuzzle = new Puzzle({ puzzleData });
                 await newPuzzle.save();
                 const puzzleArray = JSON.parse(newPuzzle.puzzleData);
-                res.status(201).json({ message: 'Puzzle created successfully', puzzle: puzzleArray });
+                res.status(201).json({ message: `Puzzle with ID of:${newPuzzle._id} created successfully`, puzzle: puzzleArray });
             }
             else {
                     const puzzleArray = JSON.parse(puzzle.puzzleData);
-                    res.status(200).json({ message: 'Puzzle retrieved successfully', puzzle: puzzleArray });
+                    res.status(200).json({ message: `Puzzle with ID of:${puzzle._id} retrieved successfully`, puzzle: puzzleArray });
             }
         } catch (error) {
             res.status(500).json({ message: 'Error retrieving puzzle', error });
