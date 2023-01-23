@@ -13,7 +13,7 @@ module.exports = {
             res.status(201).json({ message: 'Puzzle created successfully', puzzle: newPuzzle });
             }
             else {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ message: 'Unauthorized user, access denied.' });
             }
         } catch (error) {
             res.status(500).json({ message: 'Error creating puzzle', error });
@@ -24,11 +24,12 @@ module.exports = {
         try {
             const puzzle = await Puzzle.findOne().sort({ _id: -1 });
             if (!puzzle) {
-                const puzzleArray = generateSudoku();
-                const puzzleData = JSON.stringify(puzzleArray);
+                const generatedPuzzle = generateSudoku();
+                const puzzleData = JSON.stringify(generatedPuzzle);
                 const newPuzzle = new Puzzle({ puzzleData });
                 await newPuzzle.save();
-                res.status(201).json({ message: 'Puzzle created successfully', puzzle: newPuzzle });
+                const puzzleArray = JSON.parse(newPuzzle.puzzleData);
+                res.status(201).json({ message: 'Puzzle created successfully', puzzle: puzzleArray });
             }
             else {
                     const puzzleArray = JSON.parse(puzzle.puzzleData);
@@ -66,7 +67,7 @@ module.exports = {
             res.status(200).json({ message: 'Puzzle deleted successfully' });
             }
             else {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ message: 'Unauthorized user, access denied.' });
             }
         } catch (error) {
             res.status(500).json({ message: 'Error deleting puzzle', error });
@@ -79,7 +80,7 @@ module.exports = {
             res.status(200).json({ message: 'All puzzles deleted successfully' });
             }
             else {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ message: 'Unauthorized user, access denied.' });
             }
         } catch (error) {
             res.status(500).json({ message: 'Error deleting puzzles', error });

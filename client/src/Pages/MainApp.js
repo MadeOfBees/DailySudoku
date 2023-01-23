@@ -7,18 +7,12 @@ export default function MainApp() {
     fetch("api/puzzles/current/")
       .then((res) => res.json())
       .then((data) => {
-        if (data.message === "Puzzle retrieved successfully") {
-          setPuzzle(data.puzzle);
-        }
-        else {
-          setPuzzle(JSON.parse(data.puzzle.puzzleData));
-        }
+        setPuzzle(data.puzzle);
       }
       );
   }, []);
-
   return (
-    <div>
+    <div style={{ display: 'flex', justifyContent: 'center'}}>
       {puzzle ? <GameBoard puzzle={puzzle} style={style} /> : null}
     </div>
   );

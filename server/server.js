@@ -44,5 +44,5 @@ const job = new cron.CronJob('0 0 * * *', putPuzzleInDB);
 job.start();
 
 db.once('open', () => {
-  app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
+  app.listen(PORT, () => console.log(`Connected on port: ${PORT}`));
 });

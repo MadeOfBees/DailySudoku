@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Button, Modal, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import './GameBoard.css'
 
 const GameBoard = (dataCrate) => {
     const theme = useTheme();
@@ -15,28 +14,28 @@ const GameBoard = (dataCrate) => {
     const [gradeOutput, setGradeOutput] = React.useState('');
     const handleGradeModalClose = () => { setGradeModal(false); };
 
-    const drawCell = (cell, cellIndex, rowIndex) => {
+    const drawCell = (cell, cellIndex, rowIndex, textSize) => {
         const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
-        let color = theme.palette.text.secondary;
-        if (!cell.isShown) color = theme.palette.primary.main;
-        if (cell.color) color = cell.color;
+        const color = !cell.isShown ? theme.palette.primary.main : cell.color ? cell.color : theme.palette.text.secondary;
         return (
-            <div key={cellIndex} id={cellName} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '2.5REM', height: "REM", color: color }} onClick={() => { cellChangeModal(cellName); }}>
+            <div key={cellIndex} id={cellName} style={{display: 'flex', justifyContent: 'center', color: color, fontSize:textSize}} onClick={() => { cellChangeModal(cellName); }}>
                 {cell.shownValue}
             </div>
         );
     };
 
     const drawBoard = (currentPuzzle) => {
+        const divsize = (window.innerWidth > 900) ? '600px' : (window.innerWidth > 600) ? '400px' : '250px';
+        const textSize = (window.innerWidth > 900) ? '2.5em' : (window.innerWidth > 600) ? '1.5em' : '1em';
         return (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gridTemplateRows: 'repeat(9, 1fr)', gridColumnGap: 0, gridRowGap: 0 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gridTemplateRows: 'repeat(9, 1fr)', gridColumnGap: 0, gridRowGap: 0, width: divsize, height: divsize, border: 'thick solid black' }}>
                 {currentPuzzle.flat().map((cell, index) => { 
                     const rowIndex = Math.floor(index / 9);
                     const cellIndex = index % 9;
                     const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
                     return (
                         <div key={index} id={cellName} style={{border: 'thin solid black', borderRight: (cellIndex === 2 || cellIndex === 5) ? 'thick solid black' : 'thin solid black', borderBottom: (rowIndex === 2 || rowIndex === 5) ? 'thick solid black' : 'thin solid black'}} onClick={() => { cellChangeModal(cellName); }}>
-                            {drawCell(cell, cellIndex, rowIndex)}
+                            {drawCell(cell, cellIndex, rowIndex, textSize)}
                         </div>
                     );
                 })}
