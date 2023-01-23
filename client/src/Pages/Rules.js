@@ -1,5 +1,4 @@
 import GitHubIcon from '@mui/icons-material/GitHub';
-import CssBaseline from '@mui/material/CssBaseline';
 
 function greetings() {
   if (new Date().getHours() < 12) { return 'morning'; }
@@ -9,9 +8,8 @@ function greetings() {
 
 function AboutUs() {
   return (
+    // div className="AboutUs" is scrollable if the content is too long
     <div className="AboutUs">
-      {/* css baseline */}
-      <CssBaseline />
       <h1>Good {greetings()}!</h1>
       <h3>Welcome to our site's closed Alpha!</h3>
       <h3>The rules of Sudoku:</h3>

@@ -32,18 +32,13 @@
   left: 5%;
   top: 0%;
   margin-right: 5%;
-  height: 875px;
+  height: 100%;
 }
 
-.TheBoard
-{
-  position: absolute;
-  top: 5%;
-}
-
-@media (max-height: 450px) {
-  .TheBoard {
-    height: 115%;
-  }
+.AboutUs {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  height: 800px;
 }
 
