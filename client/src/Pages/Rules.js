@@ -8,7 +8,6 @@ function greetings() {
 
 function AboutUs() {
   return (
-    // div className="AboutUs" is scrollable if the content is too long
     <div className="AboutUs">
       <h1>Good {greetings()}!</h1>
       <h3>Welcome to our site's closed Alpha!</h3>
@@ -25,6 +24,7 @@ function AboutUs() {
       </ul>
       <p>This is a website made by: <a href="https://github.com/MadeOfBees">MadeOfBees </a><GitHubIcon /></p>
       <p>Check out the source code on <a href="https://github.com/MadeOfBees/DailySudoku">GitHub</a></p>
+      <div style={{ height: '50px' }}></div>
     </div>
   );
 }
