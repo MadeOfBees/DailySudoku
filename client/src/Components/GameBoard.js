@@ -46,8 +46,8 @@ const GameBoard = (dataCrate) => {
     };
 
     const drawBoard = (currentPuzzle) => {
-        const divsize = (window.innerWidth > 900) ? '650px' : (window.innerWidth > 550) ? '500px' : '400px';
-        const textSize = (window.innerWidth > 900) ? '2.8em' : (window.innerWidth > 550) ? '2.1em' : '1.6em';
+        const divsize = (window.innerWidth > 900) ? '650px' : (window.innerWidth > 550) ? '500px' : '376px';
+        const textSize = (window.innerWidth > 900) ? '2.8em' : (window.innerWidth > 550) ? '2.1em' : '1.4em';
         const boardCrayon = theme.palette.mode === 'dark' ? "DarkGray" : "black";
         const thinBorder = `thin solid ${boardCrayon}`
         const thickBorder = `thick solid ${boardCrayon}`
