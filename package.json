@@ -1,6 +1,6 @@
 {
     "name": "daily-suduku",
-    "version": "0.4.0",
+    "version": "0.4.2",
     "description": "A sudku game that is updated daily using mongodb",
     "main": "server/server.js",
     "engines": {
