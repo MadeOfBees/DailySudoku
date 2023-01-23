@@ -17,6 +17,7 @@ function AboutUs() {
         <li>Each row and or column must contain all of the numbers from 1 to 9, with no repetitions.</li>
         <li>Each of the 9 3x3 sub-grids must ALSO contain all of the numbers from 1 to 9, with no repetitions.</li>
         <li>When you click on a number a Modal will pop up with a keypad. Click on the keypad to fill in the number.</li>
+        <li>Press the R key durring the game to reset the puzzle.</li>
         <li>When you are done filling in the puzzle the game will automatically check if you have won or lost.</li>
         <li>Every day a new puzzle will be generated for you to solve.</li>
         <li>Everyone in the world has the same puzzle at the same time so have fun competing with your friends!</li>
