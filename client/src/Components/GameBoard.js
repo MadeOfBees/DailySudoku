@@ -6,7 +6,7 @@ const GameBoard = (dataCrate) => {
     const theme = useTheme();
     const style = dataCrate.style;
     const toBeSquare = { ...style, width: '250px', height: '250px', display: 'flex', justifyContent: 'center', alignItems: 'center', top: '37%', position: 'absolute' };
-    const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, isShown: cell.isShown, note:false }; }); });
+    const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, isShown: cell.isShown, notes:"" }; }); });
     const [currentPuzzle, setCurrentPuzzle] = React.useState(puzzleWithShownVal);
     const [modalOpen, setModalOpen] = React.useState(false);
     const [currentCell, setCurrentCell] = React.useState('');
@@ -25,20 +25,38 @@ const GameBoard = (dataCrate) => {
     };
 
     const drawCell = (cell, cellIndex, rowIndex, textSize, textColor) => {
-        console.log(cell);
+        const noteTextSize = (window.innerWidth > 900) ? '.9rem' : (window.innerWidth > 550) ? '.7REM' : (window.innerWidth > 375)?  '.5REM': '.37REM';
         const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
-        const noteColor = cell.note ? theme.palette.secondary.main : theme.palette.primary.main;
-        const color = !cell.isShown ? noteColor : cell.color ? cell.color : textColor;
+        const playerCellColor = cell.notes ? theme.palette.secondary.main : theme.palette.primary.main;
+        const color = !cell.isShown ? playerCellColor : cell.color ? cell.color : textColor;
+        const notesArray = cell.notes ? parseInt(cell.notes).toString().split('') : [];
+        if (notesArray.length === 0) {
+            return (
+                <div key={cellName} style={{ color: color, fontSize: textSize, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {cell.shownValue}
+                </div>
+            );
+        }
         return (
-            <div key={cellIndex} id={cellName} style={{ display: 'flex', justifyContent: 'center', color: color, fontSize: textSize }} onClick={() => { cellChangeModal(cellName); }}>
-                {cell.shownValue}
+            <div key={cellName} style={{ color: color, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'repeat(3, 1fr)', gridColumnGap: 0, gridRowGap: 0 }}>
+                {notesArray.map((note) => {
+                    return (
+                        <div key={note} style={{ color: color, fontSize: noteTextSize, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            {note}
+                        </div>
+                    );
+                })}
             </div>
         );
+
     };
+    
+    
+    
 
     const drawBoard = (currentPuzzle) => {
         const divsize = (window.innerWidth > 900) ? '650px' : (window.innerWidth > 550) ? '500px' : (window.innerWidth > 375)?  '350px': '275px';
-        const textSize = (window.innerWidth > 900) ? '2.8em' : (window.innerWidth > 550) ? '2.1em' : (window.innerWidth > 375)?  '1.3em': '1.1em';
+        const textSize = (window.innerWidth > 900) ? '2.8em' : (window.innerWidth > 550) ? '2em' : (window.innerWidth > 375)?  '1.3em': '1.1em';
         const boardCrayon = theme.palette.mode === 'dark' ? "DarkGray" : "black";
         const thinBorder = `thin solid ${boardCrayon}`
         const thickBorder = `thick solid ${boardCrayon}`
@@ -73,15 +91,28 @@ const GameBoard = (dataCrate) => {
     };
 
     const handleModalSubmit = (val) => {
+        if (!isNoteMode) {
         const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
             return row.map((cell, cellIndex) => {
-                if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: val, trueValue: cell.trueValue, note:isNoteMode }; } return cell;
+                if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: val, trueValue: cell.trueValue, notes: "" }; } return cell;
             });
         });
         setCurrentPuzzle(updatedPuzzle);
         handleModalClose();
         setCurrentCell('');
         checkBoardState(updatedPuzzle);
+    } else {
+
+        const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
+            return row.map((cell, cellIndex) => {
+                const cellAlreadyHasNote = cell.notes.toString().includes(val.toString());
+                if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}` && !cellAlreadyHasNote) { return { shownValue: cell.shownValue, trueValue: cell.trueValue, notes: cell.notes ? " " + cell.notes + val : val, note:isNoteMode }; } return cell;
+            });
+        });
+        setCurrentPuzzle(updatedPuzzle);
+        handleModalClose();
+        setCurrentCell('');
+    };
     };
 
     const handleWin = (gameStatus, puzzle) => {
@@ -114,7 +145,7 @@ const GameBoard = (dataCrate) => {
     const checkBoardState = (updatedPuzzle) => {
         const allCellsHaveShownValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue !== '⠀'; }); });
         if (allCellsHaveShownValues) {
-            if (updatedPuzzle.flat().every((cell) => { return !cell.note; })) {
+            if (updatedPuzzle.flat().every((cell) => { return cell.notes === ''; })) {
                 const allCellsHaveCorrectValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue === cell.trueValue; }); });
                 handleWin(allCellsHaveCorrectValues, updatedPuzzle);
             }
