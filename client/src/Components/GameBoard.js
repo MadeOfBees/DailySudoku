@@ -58,8 +58,8 @@ const GameBoard = (dataCrate) => {
                 })}
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-around', width: divsize, marginTop: '3.75%' }}>
-                <Button variant="contained" color="primary" onClick={() => { setResetModal(true); }}>Reset</Button>
-                <Button style={{backgroundColor: noteButtonColor,color: theme.palette.mode === 'dark' ? 'black' : 'white',}} onClick={() => { setIsNoteMode(!isNoteMode); }}>Note mode</Button>
+                <Button variant="contained" color="primary" style={{ width: '125px' }} onClick={() => { setResetModal(true); }}>Reset</Button>
+                <Button style={{backgroundColor: noteButtonColor,color: theme.palette.mode === 'dark' ? 'black' : 'white', width: '125px'}} onClick={() => { setIsNoteMode(!isNoteMode); }}>{isNoteMode ? 'using pencil' : 'using pen'}</Button>
             </div>
             </main>
         );
@@ -110,7 +110,6 @@ const GameBoard = (dataCrate) => {
         });
         setCurrentPuzzle(newPuzzle);
     };
-
 
     const checkBoardState = (updatedPuzzle) => {
         const allCellsHaveShownValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue !== '⠀'; }); });
