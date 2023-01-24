@@ -5,7 +5,7 @@ require('dotenv').config();
 module.exports = {
     newPuzzle: async (req, res) => {
         try {
-            const blank = req.params.num ? req.params.blank : 42;
+            const blank = req.params.num ? req.params.num : 42;
             if (req.body.password === process.env.SPASSWORD) {
             const puzzleArray = generateSudoku(blank);
             const puzzleData = JSON.stringify(puzzleArray);

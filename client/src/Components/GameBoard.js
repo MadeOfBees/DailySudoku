@@ -6,7 +6,7 @@ const GameBoard = (dataCrate) => {
     const theme = useTheme();
     const style = dataCrate.style;
     const toBeSquare = { ...style, width: '250px', height: '250px', display: 'flex', justifyContent: 'center', alignItems: 'center', top: '37%', position: 'absolute' };
-    const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, isShown: cell.isShown }; }); });
+    const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, isShown: cell.isShown, note:false }; }); });
     const [currentPuzzle, setCurrentPuzzle] = React.useState(puzzleWithShownVal);
     const [modalOpen, setModalOpen] = React.useState(false);
     const [currentCell, setCurrentCell] = React.useState('');
@@ -16,6 +16,7 @@ const GameBoard = (dataCrate) => {
     const handleGradeModalClose = () => { setGradeModal(false); };
     const [resetModal, setResetModal] = React.useState(false);
     const handleResetModalClose = () => { setResetModal(false); };
+    const [isNoteMode, setIsNoteMode] = React.useState(false);
     
     const handleReset = () => {
         const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, isShown: cell.isShown }; }); });
@@ -23,21 +24,11 @@ const GameBoard = (dataCrate) => {
         setResetModal(false);
     };
 
-    React.useEffect(() => {
-        const handleKeyDown = (event) => {
-            if (event.key === 'r') {
-                setResetModal(!resetModal);
-            }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [resetModal]);
-
     const drawCell = (cell, cellIndex, rowIndex, textSize, textColor) => {
+        console.log(cell);
         const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
-        const color = !cell.isShown ? theme.palette.primary.main : cell.color ? cell.color : textColor;
+        const noteColor = cell.note ? theme.palette.secondary.main : theme.palette.primary.main;
+        const color = !cell.isShown ? noteColor : cell.color ? cell.color : textColor;
         return (
             <div key={cellIndex} id={cellName} style={{ display: 'flex', justifyContent: 'center', color: color, fontSize: textSize }} onClick={() => { cellChangeModal(cellName); }}>
                 {cell.shownValue}
@@ -51,7 +42,9 @@ const GameBoard = (dataCrate) => {
         const boardCrayon = theme.palette.mode === 'dark' ? "DarkGray" : "black";
         const thinBorder = `thin solid ${boardCrayon}`
         const thickBorder = `thick solid ${boardCrayon}`
+        const noteButtonColor = !isNoteMode ? theme.palette.primary.main : theme.palette.secondary.main;
         return (
+            <main>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gridTemplateRows: 'repeat(9, 1fr)', gridColumnGap: 0, gridRowGap: 0, width: divsize, height: divsize, border: thickBorder }}>
                 {currentPuzzle.flat().map((cell, index) => {
                     const rowIndex = Math.floor(index / 9);
@@ -64,6 +57,11 @@ const GameBoard = (dataCrate) => {
                     );
                 })}
             </div>
+            <div style={{ display: 'flex', justifyContent: 'space-around', width: divsize, marginTop: '3.75%' }}>
+                <Button variant="contained" color="primary" onClick={() => { setResetModal(true); }}>Reset</Button>
+                <Button style={{backgroundColor: noteButtonColor,color: theme.palette.mode === 'dark' ? 'black' : 'white',}} onClick={() => { setIsNoteMode(!isNoteMode); }}>Note mode</Button>
+            </div>
+            </main>
         );
     };
 
@@ -71,13 +69,13 @@ const GameBoard = (dataCrate) => {
         if (currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].shownValue === '⠀' || !currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].isShown) {
             setCurrentCell(cellName);
             setModalOpen(true);
-        };
+        }
     };
 
     const handleModalSubmit = (val) => {
         const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
             return row.map((cell, cellIndex) => {
-                if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: val, trueValue: cell.trueValue }; } return cell;
+                if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: val, trueValue: cell.trueValue, note:isNoteMode }; } return cell;
             });
         });
         setCurrentPuzzle(updatedPuzzle);
@@ -117,10 +115,50 @@ const GameBoard = (dataCrate) => {
     const checkBoardState = (updatedPuzzle) => {
         const allCellsHaveShownValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue !== '⠀'; }); });
         if (allCellsHaveShownValues) {
-            const allCellsHaveCorrectValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue === cell.trueValue; }); });
-            handleWin(allCellsHaveCorrectValues, updatedPuzzle);
+            if (updatedPuzzle.flat().every((cell) => { return !cell.note; })) {
+                const allCellsHaveCorrectValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue === cell.trueValue; }); });
+                handleWin(allCellsHaveCorrectValues, updatedPuzzle);
+            }
         }
     };
+
+    React.useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'r') {
+                setResetModal(!resetModal);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [resetModal]);
+
+    React.useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'n') {
+                setIsNoteMode(!isNoteMode);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isNoteMode]);
+
+    React.useEffect(() => {
+        if (modalOpen) {
+        const handleKeyPress = (event) => {
+            if (event.key >= 1 && event.key <= 9) {
+                handleModalSubmit(parseInt(event.key));
+            }
+        };
+        document.addEventListener('keydown', handleKeyPress);
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+        }
+    });
 
     return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '5%' }}>
