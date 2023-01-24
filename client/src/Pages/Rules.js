@@ -18,8 +18,8 @@ function AboutUs() {
         <li>Each of the 9 3x3 sub-grids must ALSO contain all of the numbers from 1 to 9, with no repetitions.</li>
         <li>When you click on a number a Modal will pop up with a keypad. Click on the keypad to fill in the number or press the number on your keyboard.</li>
         <li>Press the R key or click the Reset button durring the game to reset the puzzle.</li>
-        <li>Press the N key or click the Notes button durring the game to toggle between filling in the numbers (blue) and notes (marked in purple).</li>
-        <li>Notes are only visible to you and will be checked by the game.</li>
+        <li>Press the N key or click the Pen/Pencil button durring the game to toggle between filling in numbers as anwers with pen mode (marked as blue) or notes with the pencil (marked in purple).</li>
+        <li>Notes are only visible to you and will NOT be checked by the game.</li>
         <li>When you are done filling in the puzzle the game will automatically check if you have won or lost.</li>
         <li>Every day a new puzzle will be generated for you to solve.</li>
         <li>Everyone in the world has the same puzzle at the same time so have fun competing with your friends!</li>
