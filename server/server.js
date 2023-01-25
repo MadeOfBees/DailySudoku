@@ -4,8 +4,8 @@ const db = require('./config/connection');
 const routes = require('./routes');
 const cors = require('cors');
 require('dotenv').config();
-const cron = require('cron');
 const { newPuzzle } = require('./controllers/puzzle-controller');
+const schedule = require('node-schedule');
 
 
 const app = express();
@@ -40,8 +40,10 @@ function putPuzzleInDB() {
   newPuzzle(req, res);
 }
 
-const job = new cron.CronJob('0 0 * * *', putPuzzleInDB);
-job.start();
+const rule = new schedule.RecurrenceRule();
+rule.hour = 0;
+rule.minute = 0;
+schedule.scheduleJob(rule, putPuzzleInDB);
 
 db.once('open', () => {
   app.listen(PORT, () => console.log(`Connected on port: ${PORT}`));
