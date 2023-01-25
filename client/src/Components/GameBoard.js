@@ -18,11 +18,15 @@ const GameBoard = (dataCrate) => {
     const [resetModal, setResetModal] = React.useState(false);
     const handleResetModalClose = () => { setResetModal(false); };
     const [writeMode, setWriteMode] = React.useState(1);
+    const [gameHasStarted, setGameHasStarted] = React.useState(false);
+    const [gameTimer, setGameTimer] = React.useState(0);
 
     const handleReset = () => {
-        const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, isShown: cell.isShown }; }); });
+        const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, isShown: cell.isShown, notes: "" }; }); });
         setCurrentPuzzle(puzzleWithShownVal);
         setResetModal(false);
+        setGameHasStarted(false);
+        setGameTimer(0);
     };
 
     const cycleWriteMode = React.useCallback(() => {
@@ -110,6 +114,7 @@ const GameBoard = (dataCrate) => {
     };
 
     const handleModalSubmit = (val) => {
+        setGameHasStarted(true);
         if (writeMode === 1) {
             const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
                 return row.map((cell, cellIndex) => {
@@ -144,16 +149,33 @@ const GameBoard = (dataCrate) => {
     };
 
     const handleWin = (gameStatus, puzzle) => {
+        const timeAtWin = new Date(gameTimer * 1000).toISOString().substr(11, 8);
         if (gameStatus) {
             handleWinGame(puzzle);
-            setGradeOutput('You Win!');
+            setGradeOutput(`You Win! Your time was ${timeAtWin}`);
             setGradeModal(true);
         } else {
             handleLoseGame(puzzle);
-            setGradeOutput('You Lose!');
+            setGradeOutput(`You Lose! Your time was ${timeAtWin}`);
             setGradeModal(true);
         }
+        submitTime(gameStatus);
     };
+
+    const submitTime = (gameStatus) => {
+        fetch('/api/scores/new/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ didSolve: gameStatus, time: gameTimer }),
+        })
+            .then((response) => response.json())
+            .catch((error) => {
+                console.log(`Error: ${error}`);
+            });
+    };
+
 
     const handleWinGame = (puzzle) => {
         const newPuzzle = puzzle.map((row) => { return row.map((cell) => { return { ...cell, color: 'Chartreuse', isShown: true }; }); });
@@ -236,6 +258,16 @@ const GameBoard = (dataCrate) => {
         }
     });
 
+    React.useEffect(() => {
+        if (gameHasStarted) {
+            const timer = setInterval(() => {
+                setGameTimer((timer) => timer + 1);
+            }, 1000);
+            return () => clearInterval(timer);
+        }
+    }, [gameHasStarted, gameTimer]);
+
+
     return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '5%' }}>
             {drawBoard(currentPuzzle)}
@@ -248,7 +280,7 @@ const GameBoard = (dataCrate) => {
             </Modal >
             <Modal open={gradeModal} onClose={handleGradeModalClose}>
                 <Box sx={style}>
-                    <h1>{gradeOutput}</h1>
+                    <h3>{gradeOutput}</h3>
                 </Box >
             </Modal >
             <Modal open={resetModal} onClose={handleResetModalClose}>
