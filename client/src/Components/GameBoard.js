@@ -87,7 +87,8 @@ const GameBoard = (dataCrate) => {
                     })}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-around', width: divsize, marginTop: '3.75%' }}>
-                    <Button variant="contained" color="primary" style={{ width: '150px' }} onClick={() => { setResetModal(true); }}>Reset</Button>
+                    <Button variant="contained" color="primary" style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.mode === 'dark' ? 'black':'white', width: '150px' }} onClick={() => { setResetModal(true); }}>Reset</Button>
+                    <div style={{ width: '2%' }} />
                     <Button style={{ backgroundColor: noteButtonColor, color: theme.palette.mode === 'dark' ? 'black' : 'white', width: '150px' }} onClick={() => { cycleWriteMode(); }}>{writeMode === 1 ? 'Using Pen' : writeMode === 2 ? 'Using Pencil' : 'Using Eraser'}</Button>
                 </div>
             </main>
