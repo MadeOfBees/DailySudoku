@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Button, Modal, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import CreateIcon from '@mui/icons-material/Create';
+import EraserIcon from '@mui/icons-material/HighlightOff';
 
 const GameBoard = (dataCrate) => {
     const theme = useTheme();
@@ -30,19 +32,26 @@ const GameBoard = (dataCrate) => {
         setGameTimer(0);
     };
 
-    const cycleWriteMode = React.useCallback(() => {
-        if (writeMode < 3) {
-            setWriteMode(writeMode + 1);
+    const toggleWriteMode = React.useCallback(() => {
+        if (writeMode !== 2) {
+            setWriteMode(2);
         } else {
             setWriteMode(1);
         }
     }, [writeMode]);
 
+    const eraseMode = React.useCallback(() => {
+        if (writeMode !== 3) {
+            setWriteMode(3);
+        } else {
+            setWriteMode(1);
+        }
+    }, [writeMode]);
 
     const drawCell = (cell, cellIndex, rowIndex, textSize, textColor) => {
-        const noteTextSize = (window.innerWidth > 900) ? '.9rem' : (window.innerWidth > 550) ? '.7REM' : (window.innerWidth > 375) ? '.5REM' : '.3REM';
+        const noteTextSize = (window.innerWidth > 900) ? '.9rem' : (window.innerWidth > 550) ? '.7REM' : (window.innerWidth > 375) ? '.5REM' : '.27REM';
         const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
-        const colorStep1 = cell.notes ? theme.palette.secondary.main : theme.palette.primary.main;
+        const colorStep1 = cell.notes ? theme.palette.warning.main : theme.palette.primary.main;
         const color = !cell.isShown ? colorStep1 : cell.color ? cell.color : textColor;
         const notesArray = cell.notes ? parseInt(cell.notes).toString().split('') : [];
         if (notesArray.length === 0) {
@@ -71,7 +80,6 @@ const GameBoard = (dataCrate) => {
         const boardCrayon = theme.palette.mode === 'dark' ? "DarkGray" : "black";
         const thinBorder = `thin solid ${boardCrayon}`
         const thickBorder = `thick solid ${boardCrayon}`
-        const noteButtonColor = writeMode === 1 ? theme.palette.primary.main : writeMode === 2 ? theme.palette.secondary.main : theme.palette.error.main;
         return (
             <main>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gridTemplateRows: 'repeat(9, 1fr)', gridColumnGap: 0, gridRowGap: 0, width: divsize, height: divsize, border: thickBorder }}>
@@ -86,10 +94,15 @@ const GameBoard = (dataCrate) => {
                         );
                     })}
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-around', width: divsize, marginTop: '3.75%' }}>
-                    <Button style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.mode === 'dark' ? 'black' : 'white', width: '150px' }} onClick={() => { setResetModal(true); }}>Reset</Button>
-                    <div style={{ width: '2%' }} />
-                    <Button style={{ backgroundColor: noteButtonColor, color: theme.palette.mode === 'dark' ? 'black' : 'white', width: '150px' }} onClick={() => { cycleWriteMode(); }}>{writeMode === 1 ? 'Using Pen' : writeMode === 2 ? 'Using Pencil' : 'Using Eraser'}</Button>
+                <div style={{ display: 'flex', width: divsize, marginTop: '3.75%' }}>
+                    <div style={{ flex: 1 }}>
+                        <Button style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.mode === 'dark' ? 'black' : 'white', width: '100px' }} onClick={() => { setResetModal(true); }}>Reset</Button>
+                    </div>
+                    <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button style={{ backgroundColor: (writeMode === 2) ? theme.palette.warning.main : 'grey', color: (writeMode === 2) ? theme.palette.mode === 'dark' ? 'black' : 'white' : theme.palette.mode === 'dark' ? 'white' : 'black' }} onClick={() => { toggleWriteMode() }}><CreateIcon /></Button>
+                        <div style={{ width: '20%' }} />
+                        <Button style={{ backgroundColor: (writeMode === 3) ? theme.palette.secondary.main : 'grey', color: (writeMode === 3) ? theme.palette.mode === 'dark' ? 'black' : 'white' : theme.palette.mode === 'dark' ? 'white' : 'black' }} onClick={() => { eraseMode(3); }}><EraserIcon /></Button>
+                    </div>
                 </div>
             </main>
         );
@@ -233,15 +246,19 @@ const GameBoard = (dataCrate) => {
         if (!modalOpen) {
             const handleKeyDown = (event) => {
                 if (event.key === 'm') {
-                    cycleWriteMode();
+                    toggleWriteMode();
+                }
+                if (event.key === 'e') {
+                    eraseMode();
                 }
             };
             window.addEventListener('keydown', handleKeyDown);
             return () => {
                 window.removeEventListener('keydown', handleKeyDown);
             };
-        }
-    }, [writeMode, cycleWriteMode, modalOpen]);
+        };
+    }, [modalOpen, eraseMode, toggleWriteMode]);
+
 
     React.useEffect(() => {
         if (modalOpen) {
@@ -274,7 +291,7 @@ const GameBoard = (dataCrate) => {
                 <Box sx={toBeSquare}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr', gridGap: '5px' }}>
                         {Array.from({ length: 9 }, (_, i) => (<Button style={{ width: "75px", height: "75px" }} key={i} variant="contained"
-                            color={(currentCellNotes.toString().includes((i + 1).toString())) ? 'secondary' : (currentCellShownValue.toString() === (i + 1).toString()) ? 'grey' : 'primary'}
+                            color={(currentCellNotes.toString().includes((i + 1).toString())) ? 'warning' : (currentCellShownValue.toString() === (i + 1).toString()) ? 'grey' : 'primary'}
                             onClick={() => handleModalSubmit(i + 1)}>{i + 1}</Button>))}
                     </div>
                 </Box >
