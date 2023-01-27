@@ -4,12 +4,10 @@ const db = require('./config/connection');
 const routes = require('./routes');
 const cors = require('cors');
 require('dotenv').config();
-const { newPuzzle } = require('./controllers/puzzle-controller');
 const schedule = require('node-schedule');
-
-
 const app = express();
 const PORT = process.env.PORT || 3001;
+const {newPuzzle} = require('./controllers/puzzle-controller.js');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -21,28 +19,22 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use(routes);
 
-function putPuzzleInDB() {
-  const req = {
-    body: {
-      "password": process.env.SPASSWORD
-    }
-  };
-  const res = {
-    status: function (status) {
-      this.status = status;
-      return this;
-    },
-    json: function (json) {
-      this.json = json;
-      return this;
-    }
-  };
-  newPuzzle(req, res);
-}
+const putPuzzleInDB = async () => {
+  const reqBody = { password: process.env.SPASSWORD };
+  const reqParams = { num: 42 };
+  const req = { body: reqBody, params: reqParams };
+  const res = { status: (code) => { return { json: (message) => { console.log('Puzzle created successfully and added to DB'); } } } };
+  try {
+    await newPuzzle(req, res);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const rule = new schedule.RecurrenceRule();
 rule.hour = 0;
 rule.minute = 0;
+rule.tz = 'America/New_York';
 schedule.scheduleJob(rule, putPuzzleInDB);
 
 db.once('open', () => {

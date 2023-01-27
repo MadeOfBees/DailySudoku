@@ -20,8 +20,10 @@ const GameBoard = (dataCrate) => {
     const [writeMode, setWriteMode] = React.useState(1);
     const [gameHasStarted, setGameHasStarted] = React.useState(false);
     const [gameTimer, setGameTimer] = React.useState(0);
+    const [currentCellShownValue, setCurrentCellShownValue] = React.useState('⠀');
 
     const handleReset = () => {
+        setResetModal(false);
         const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, isShown: cell.isShown, notes: "" }; }); });
         setCurrentPuzzle(puzzleWithShownVal);
         setResetModal(false);
@@ -39,10 +41,10 @@ const GameBoard = (dataCrate) => {
 
 
     const drawCell = (cell, cellIndex, rowIndex, textSize, textColor) => {
-        const noteTextSize = (window.innerWidth > 900) ? '.9rem' : (window.innerWidth > 550) ? '.7REM' : (window.innerWidth > 375) ? '.5REM' : '.37REM';
+        const noteTextSize = (window.innerWidth > 900) ? '.9rem' : (window.innerWidth > 550) ? '.7REM' : (window.innerWidth > 375) ? '.5REM' : '.3REM';
         const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
-        const playerCellColor = cell.notes ? theme.palette.secondary.main : theme.palette.primary.main;
-        const color = !cell.isShown ? playerCellColor : cell.color ? cell.color : textColor;
+        const colorStep1 = cell.notes ? theme.palette.secondary.main : theme.palette.primary.main;
+        const color = !cell.isShown ? colorStep1 : cell.color ? cell.color : textColor;
         const notesArray = cell.notes ? parseInt(cell.notes).toString().split('') : [];
         if (notesArray.length === 0) {
             return (
@@ -62,7 +64,6 @@ const GameBoard = (dataCrate) => {
                 })}
             </div>
         );
-
     };
 
     const drawBoard = (currentPuzzle) => {
@@ -87,7 +88,7 @@ const GameBoard = (dataCrate) => {
                     })}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-around', width: divsize, marginTop: '3.75%' }}>
-                    <Button variant="contained" color="primary" style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.mode === 'dark' ? 'black':'white', width: '150px' }} onClick={() => { setResetModal(true); }}>Reset</Button>
+                    <Button style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.mode === 'dark' ? 'black' : 'white', width: '150px' }} onClick={() => { setResetModal(true); }}>Reset</Button>
                     <div style={{ width: '2%' }} />
                     <Button style={{ backgroundColor: noteButtonColor, color: theme.palette.mode === 'dark' ? 'black' : 'white', width: '150px' }} onClick={() => { cycleWriteMode(); }}>{writeMode === 1 ? 'Using Pen' : writeMode === 2 ? 'Using Pencil' : 'Using Eraser'}</Button>
                 </div>
@@ -98,6 +99,7 @@ const GameBoard = (dataCrate) => {
     const cellChangeModal = (cellName) => {
         if (currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].shownValue === '⠀' || !currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].isShown) {
             if (writeMode !== 3) {
+                setCurrentCellShownValue(currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].shownValue);
                 setCurrentCell(cellName);
                 const cellNotes = currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].notes;
                 setCurrentCellNotes(cellNotes);
@@ -117,16 +119,23 @@ const GameBoard = (dataCrate) => {
     const handleModalSubmit = (val) => {
         setGameHasStarted(true);
         if (writeMode === 1) {
-            const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
-                return row.map((cell, cellIndex) => {
-                    if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: val, trueValue: cell.trueValue, notes: "" }; } return cell;
+            if (currentPuzzle[currentCell.charCodeAt(0) - 65][currentCell[1] - 1].shownValue !== val) {
+                const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
+                    return row.map((cell, cellIndex) => {
+                        if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: val, trueValue: cell.trueValue, notes: "" }; } return cell;
+                    });
                 });
-            });
-            setCurrentPuzzle(updatedPuzzle);
-            handleModalClose();
-            setCurrentCell('');
-            setCurrentCellNotes(' ');
-            checkBoardState(updatedPuzzle);
+                setCell(updatedPuzzle);
+                setCurrentCellNotes(' ');
+                checkBoardState(updatedPuzzle);
+            } else {
+                const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
+                    return row.map((cell, cellIndex) => {
+                        if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: '⠀', trueValue: cell.trueValue, notes: "" }; } return cell;
+                    });
+                });
+                setCell(updatedPuzzle);
+            }
         } else if (writeMode === 2) {
             const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
                 return row.map((cell, cellIndex) => {
@@ -134,19 +143,23 @@ const GameBoard = (dataCrate) => {
                     if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) {
                         if (cellAlreadyHasNote) {
                             const updatedNotes = cell.notes.toString().replace(val.toString(), '');
-                            return { shownValue: cell.shownValue, trueValue: cell.trueValue, notes: updatedNotes };
+                            return { shownValue: " ", trueValue: cell.trueValue, notes: updatedNotes };
                         }
                         const updatedNotes = cell.notes.toString() + val.toString();
-                        return { shownValue: cell.shownValue, trueValue: cell.trueValue, notes: updatedNotes };
+                        return { shownValue: " ", trueValue: cell.trueValue, notes: updatedNotes };
                     } return cell;
                 });
             });
-            setCurrentPuzzle(updatedPuzzle);
-            handleModalClose();
-            setCurrentCell('');
+            setCell(updatedPuzzle);
         } else if (writeMode === 3) {
             console.log("how did you get here?")
         }
+    };
+
+    const setCell = (updatedPuzzle) => {
+        setCurrentPuzzle(updatedPuzzle);
+        handleModalClose();
+        setCurrentCell('');
     };
 
     const handleWin = (gameStatus, puzzle) => {
@@ -275,7 +288,9 @@ const GameBoard = (dataCrate) => {
             <Modal open={modalOpen} onClose={handleModalClose}>
                 <Box sx={toBeSquare}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr', gridGap: '5px' }}>
-                        {Array.from({ length: 9 }, (_, i) => (<Button style={{ width: "75px", height: "75px" }} key={i} variant="contained" color={writeMode && currentCellNotes.toString().includes((i + 1).toString()) ? 'grey' : 'primary'} onClick={() => handleModalSubmit(i + 1)}>{i + 1}</Button>))}
+                        {Array.from({ length: 9 }, (_, i) => (<Button style={{ width: "75px", height: "75px" }} key={i} variant="contained"
+                            color={(currentCellNotes.toString().includes((i + 1).toString())) ? 'secondary' : (currentCellShownValue.toString() === (i + 1).toString()) ? 'grey' : 'primary'}
+                            onClick={() => handleModalSubmit(i + 1)}>{i + 1}</Button>))}
                     </div>
                 </Box >
             </Modal >
