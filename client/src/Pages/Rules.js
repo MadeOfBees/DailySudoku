@@ -16,7 +16,7 @@ function AboutUs() {
         <li>A Sudoku puzzle consists of a 9x9 grid, with some of the squares already filled in with numbers. The goal is to fill in the remaining squares with numbers from 1 to 9 in a way that satisfies the following rules:</li>
         <li>Each row and or column must contain all of the numbers from 1 to 9, with no repetitions.</li>
         <li>Each of the 9 3x3 sub-grids must ALSO contain all of the numbers from 1 to 9, with no repetitions.</li>
-        <li>When you click on a number a Modal will pop up with a keypad. Click on the keypad to fill in the number or press the number on your keyboard.</li>
+        <li>When you click on a number a Modal will pop up with a keypad. Click on the keypad to fill in the number or press the number on your keyboard, you can buffer these inputs (like in a fighting game) too.</li>
         <li>Press the R key or click the Reset button durring the game to reset the puzzle.</li>
         <li>Press the M key or click the Pen/Pencil/Eraser button durring the game to switch between filling in numbers as anwers with pen mode (marked as blue) or notes with the pencil (marked in purple), or erasing with the eraser (marked in red).</li>
         <li>Notes are only visible to you and will NOT be checked by the game.</li>
