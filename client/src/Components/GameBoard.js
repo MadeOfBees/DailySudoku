@@ -101,7 +101,7 @@ const GameBoard = (dataCrate) => {
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
                         <Button style={{ backgroundColor: (writeMode === 2) ? theme.palette.warning.main : 'grey', color: (writeMode === 2) ? theme.palette.mode === 'dark' ? 'black' : 'white' : theme.palette.mode === 'dark' ? 'white' : 'black' }} onClick={() => { toggleWriteMode() }}><CreateIcon /></Button>
                         <div style={{ width: '20%' }} />
-                        <Button style={{ backgroundColor: (writeMode === 3) ? theme.palette.secondary.main : 'grey', color: (writeMode === 3) ? theme.palette.mode === 'dark' ? 'black' : 'white' : theme.palette.mode === 'dark' ? 'white' : 'black' }} onClick={() => { eraseMode(3); }}><EraserIcon /></Button>
+                        <Button style={{ backgroundColor: (writeMode === 3) ? theme.palette.mode === 'dark' ? '#FFC0DB' : '#ff80ab': 'grey', color: (writeMode === 3) ? theme.palette.mode === 'dark' ? 'black' : 'white' : theme.palette.mode === 'dark' ? 'white' : 'black' }} onClick={() => { eraseMode(3); }}><EraserIcon /></Button>
                     </div>
                 </div>
             </main>
