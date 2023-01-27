@@ -26,7 +26,6 @@ const GameBoard = (dataCrate) => {
         setResetModal(false);
         const puzzleWithShownVal = dataCrate.puzzle.map((row) => { return row.map((cell) => { return { shownValue: cell.isShown ? cell.value : '⠀', trueValue: cell.value, isShown: cell.isShown, notes: "" }; }); });
         setCurrentPuzzle(puzzleWithShownVal);
-        setResetModal(false);
         setGameHasStarted(false);
         setGameTimer(0);
     };
@@ -249,20 +248,6 @@ const GameBoard = (dataCrate) => {
             const handleKeyPress = (event) => {
                 if (event.key >= 1 && event.key <= 9) {
                     handleModalSubmit(parseInt(event.key));
-                }
-            };
-            document.addEventListener('keydown', handleKeyPress);
-            return () => {
-                document.removeEventListener('keydown', handleKeyPress);
-            };
-        }
-    });
-
-    React.useEffect(() => {
-        if (resetModal) {
-            const handleKeyPress = (event) => {
-                if (event.key === 'Enter') {
-                    handleReset();
                 }
             };
             document.addEventListener('keydown', handleKeyPress);
