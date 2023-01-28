@@ -13,7 +13,7 @@ const GameBoard = (dataCrate) => {
     const [modalOpen, setModalOpen] = React.useState(false);
     const [currentCell, setCurrentCell] = React.useState('');
     const [currentCellNotes, setCurrentCellNotes] = React.useState(' ');
-    const handleModalClose = () => { setModalOpen(false); };
+    const handleModalClose = () => { setModalOpen(false); setCurrentCell(' ')}
     const [gradeModal, setGradeModal] = React.useState(false);
     const [gradeOutput, setGradeOutput] = React.useState('');
     const handleGradeModalClose = () => { setGradeModal(false); };
@@ -32,21 +32,7 @@ const GameBoard = (dataCrate) => {
         setGameTimer(0);
     };
 
-    const toggleWriteMode = React.useCallback(() => {
-        if (writeMode !== 2) {
-            setWriteMode(2);
-        } else {
-            setWriteMode(1);
-        }
-    }, [writeMode]);
-
-    const eraseMode = React.useCallback(() => {
-        if (writeMode !== 3) {
-            setWriteMode(3);
-        } else {
-            setWriteMode(1);
-        }
-    }, [writeMode]);
+    const shiftWriteModes = React.useCallback((i) => { if (writeMode !== i) { setWriteMode(i); } else { setWriteMode(1); } }, [writeMode]);
 
     const drawCell = (cell, cellIndex, rowIndex, textSize, textColor) => {
         const noteTextSize = (window.innerWidth > 900) ? '.9rem' : (window.innerWidth > 550) ? '.7REM' : (window.innerWidth > 375) ? '.5REM' : '.27REM';
@@ -99,9 +85,9 @@ const GameBoard = (dataCrate) => {
                         <Button style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.mode === 'dark' ? 'black' : 'white', width: '100px' }} onClick={() => { setResetModal(true); }}>Reset</Button>
                     </div>
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-                        <Button style={{ backgroundColor: (writeMode === 2) ? theme.palette.warning.main : 'grey', color: (writeMode === 2) ? theme.palette.mode === 'dark' ? 'black' : 'white' : theme.palette.mode === 'dark' ? 'white' : 'black' }} onClick={() => { toggleWriteMode() }}><CreateIcon /></Button>
+                        <Button style={{ backgroundColor: (writeMode === 2) ? theme.palette.warning.main : 'grey', color: (writeMode === 2) ? theme.palette.mode === 'dark' ? 'black' : 'white' : theme.palette.mode === 'dark' ? 'white' : 'black' }} onClick={() => { shiftWriteModes(2) }}><CreateIcon /></Button>
                         <div style={{ width: '20%' }} />
-                        <Button style={{ backgroundColor: (writeMode === 3) ? theme.palette.mode === 'dark' ? '#FFC0DB' : '#ff80ab': 'grey', color: (writeMode === 3) ? theme.palette.mode === 'dark' ? 'black' : 'white' : theme.palette.mode === 'dark' ? 'white' : 'black' }} onClick={() => { eraseMode(3); }}><EraserIcon /></Button>
+                        <Button style={{ backgroundColor: (writeMode === 3) ? theme.palette.mode === 'dark' ? '#FFC0DB' : '#ff80ab' : 'grey', color: (writeMode === 3) ? theme.palette.mode === 'dark' ? 'black' : 'white' : theme.palette.mode === 'dark' ? 'white' : 'black' }} onClick={() => { shiftWriteModes(3); }}><EraserIcon /></Button>
                     </div>
                 </div>
             </main>
@@ -112,9 +98,8 @@ const GameBoard = (dataCrate) => {
         if (currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].shownValue === '⠀' || !currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].isShown) {
             if (writeMode !== 3) {
                 setCurrentCellShownValue(currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].shownValue);
+                setCurrentCellNotes(currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].notes);
                 setCurrentCell(cellName);
-                const cellNotes = currentPuzzle[cellName.charCodeAt(0) - 65][cellName[1] - 1].notes;
-                setCurrentCellNotes(cellNotes);
                 setModalOpen(true);
             }
             else {
@@ -137,7 +122,7 @@ const GameBoard = (dataCrate) => {
                         if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: val, trueValue: cell.trueValue, notes: "" }; } return cell;
                     });
                 });
-                setCell(updatedPuzzle);
+                setCell(val, updatedPuzzle);
                 setCurrentCellNotes(' ');
                 checkBoardState(updatedPuzzle);
             } else {
@@ -146,7 +131,7 @@ const GameBoard = (dataCrate) => {
                         if (currentCell === `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`) { return { shownValue: '⠀', trueValue: cell.trueValue, notes: "" }; } return cell;
                     });
                 });
-                setCell(updatedPuzzle);
+                setCell(val, updatedPuzzle);
             }
         } else if (writeMode === 2) {
             const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
@@ -162,30 +147,32 @@ const GameBoard = (dataCrate) => {
                     } return cell;
                 });
             });
-            setCell(updatedPuzzle);
+            setCell(val, updatedPuzzle);
         } else if (writeMode === 3) {
             console.log("how did you get here?")
         }
     };
 
-    const setCell = (updatedPuzzle) => {
+    const setCell = (val, updatedPuzzle) => {
         setCurrentPuzzle(updatedPuzzle);
-        handleModalClose();
-        setCurrentCell('');
+        if (writeMode === 1) {
+            handleModalClose();
+        } else if (writeMode === 2) {
+            if (currentCellNotes.toString().includes(val.toString())) {
+                setCurrentCellNotes(currentCellNotes.toString().replace(val.toString(), ''));
+            }
+            else {
+                setCurrentCellNotes(currentCellNotes.toString() + val.toString());
+            }
+        };
     };
 
-    const handleWin = (gameStatus, puzzle) => {
+    const handleWin = (win, puzzle) => {
         const timeAtWin = new Date(gameTimer * 1000).toISOString().substr(11, 8);
-        if (gameStatus) {
-            handleWinGame(puzzle);
-            setGradeOutput(`You Win! Your time was ${timeAtWin}`);
-            setGradeModal(true);
-        } else {
-            handleLoseGame(puzzle);
-            setGradeOutput(`You Lose! Your time was ${timeAtWin}`);
-            setGradeModal(true);
-        }
-        submitTime(gameStatus);
+        makeBoardGreen(win, puzzle);
+        setGradeOutput(win ? `You Win! Your time was ${timeAtWin}` : `You Lose! Your time was ${timeAtWin}`);
+        setGradeModal(true);
+        submitTime(win);
     };
 
     const submitTime = (gameStatus) => {
@@ -202,20 +189,12 @@ const GameBoard = (dataCrate) => {
             });
     };
 
-
-    const handleWinGame = (puzzle) => {
-        const newPuzzle = puzzle.map((row) => { return row.map((cell) => { return { ...cell, color: 'Chartreuse', isShown: true }; }); });
-        setCurrentPuzzle(newPuzzle);
-    };
-
-    const handleLoseGame = (puzzle) => {
-        const newPuzzle = puzzle.map((row) => {
-            return row.map((cell) => {
-                if (!cell.isShown) return { ...cell, color: cell.trueValue === cell.shownValue ? 'Chartreuse' : 'red', isShown: true };
-                else return cell;
-            });
-        });
-        setCurrentPuzzle(newPuzzle);
+    const makeBoardGreen = (win, puzzle) => {
+        if (!win) {
+            setCurrentPuzzle(puzzle.map((row) => { return row.map((cell) => { if (!cell.isShown) return { ...cell, color: cell.trueValue === cell.shownValue ? 'Chartreuse' : 'red', isShown: true }; else return cell; }); }));
+        } else {
+            setCurrentPuzzle(puzzle.map((row) => { return row.map((cell) => { return { ...cell, color: 'Chartreuse', isShown: true }; }); }));
+        }
     };
 
     const checkBoardState = (updatedPuzzle) => {
@@ -246,10 +225,10 @@ const GameBoard = (dataCrate) => {
         if (!modalOpen) {
             const handleKeyDown = (event) => {
                 if (event.key === 'm') {
-                    toggleWriteMode();
+                    shiftWriteModes(2);
                 }
                 if (event.key === 'e') {
-                    eraseMode();
+                    shiftWriteModes(3);
                 }
             };
             window.addEventListener('keydown', handleKeyDown);
@@ -257,7 +236,7 @@ const GameBoard = (dataCrate) => {
                 window.removeEventListener('keydown', handleKeyDown);
             };
         };
-    }, [modalOpen, eraseMode, toggleWriteMode]);
+    }, [modalOpen, shiftWriteModes]);
 
 
     React.useEffect(() => {
