@@ -198,7 +198,7 @@ const GameBoard = (dataCrate) => {
     };
 
     const checkBoardState = (updatedPuzzle) => {
-        const allCellsHaveShownValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue !== '⠀'; }); });
+        const allCellsHaveShownValues = updatedPuzzle.flat().every((cell) => { return !isNaN(parseInt(cell.shownValue)); });
         if (allCellsHaveShownValues) {
             if (updatedPuzzle.flat().every((cell) => { return cell.notes === ''; })) {
                 const allCellsHaveCorrectValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue === cell.trueValue; }); });
