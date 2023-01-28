@@ -13,7 +13,7 @@ const GameBoard = (dataCrate) => {
     const [modalOpen, setModalOpen] = React.useState(false);
     const [currentCell, setCurrentCell] = React.useState('');
     const [currentCellNotes, setCurrentCellNotes] = React.useState(' ');
-    const handleModalClose = () => { setModalOpen(false); setCurrentCell(' ')}
+    const handleModalClose = (React.useCallback(() => { setModalOpen(false); setCurrentCell(' '); }, []));
     const [gradeModal, setGradeModal] = React.useState(false);
     const [gradeOutput, setGradeOutput] = React.useState('');
     const handleGradeModalClose = () => { setGradeModal(false); };
@@ -112,8 +112,44 @@ const GameBoard = (dataCrate) => {
             }
         };
     };
+    
+    const setCell = React.useCallback((val, updatedPuzzle) => {
+        setCurrentPuzzle(updatedPuzzle);
+        if (writeMode === 1) {
+            handleModalClose();
+        } else if (writeMode === 2) {
+            if (currentCellNotes.toString().includes(val.toString())) {
+                setCurrentCellNotes(currentCellNotes.toString().replace(val.toString(), ''));
+            }
+            else {
+                setCurrentCellNotes(currentCellNotes.toString() + val.toString());
+            }
+        };
+    }, [currentCellNotes, handleModalClose, writeMode]);
 
-    const handleModalSubmit = (val) => {
+    const handleEndGame = React.useCallback((win, puzzle) => {
+        if (!win) {
+            setCurrentPuzzle(puzzle.map((row) => { return row.map((cell) => { if (!cell.isShown) return { ...cell, color: cell.trueValue === cell.shownValue ? 'Chartreuse' : 'red', isShown: true }; else return cell; }); }));
+        } else {
+            setCurrentPuzzle(puzzle.map((row) => { return row.map((cell) => { return { ...cell, color: 'Chartreuse', isShown: true }; }); }));
+        }
+        const timeAtWin = new Date(gameTimer * 1000).toISOString().substr(11, 8);
+        setGradeOutput(win ? `You Win! Your time was ${timeAtWin}` : `You Lose! Your time was ${timeAtWin}`);
+        setGradeModal(true);
+        fetch('/api/scores/new/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ didSolve: win, time: gameTimer }),
+        })
+            .then((response) => response.json())
+            .catch((error) => {
+                console.log(`Error: ${error}`);
+            });
+    }, [gameTimer]);
+
+    const handleModalSubmit = React.useCallback((val) => {
         setGameHasStarted(true);
         if (writeMode === 1) {
             if (currentPuzzle[currentCell.charCodeAt(0) - 65][currentCell[1] - 1].shownValue !== val) {
@@ -124,7 +160,9 @@ const GameBoard = (dataCrate) => {
                 });
                 setCell(val, updatedPuzzle);
                 setCurrentCellNotes(' ');
-                checkBoardState(updatedPuzzle);
+                if (updatedPuzzle.flat().every((cell) => { return !isNaN(parseInt(cell.shownValue)); })) {
+                    handleEndGame(updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue === cell.trueValue; }); }), updatedPuzzle);
+                }
             } else {
                 const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
                     return row.map((cell, cellIndex) => {
@@ -151,73 +189,7 @@ const GameBoard = (dataCrate) => {
         } else if (writeMode === 3) {
             console.log("how did you get here?")
         }
-    };
-
-    const setCell = (val, updatedPuzzle) => {
-        setCurrentPuzzle(updatedPuzzle);
-        if (writeMode === 1) {
-            handleModalClose();
-        } else if (writeMode === 2) {
-            if (currentCellNotes.toString().includes(val.toString())) {
-                setCurrentCellNotes(currentCellNotes.toString().replace(val.toString(), ''));
-            }
-            else {
-                setCurrentCellNotes(currentCellNotes.toString() + val.toString());
-            }
-        };
-    };
-
-    const handleWin = (win, puzzle) => {
-        const timeAtWin = new Date(gameTimer * 1000).toISOString().substr(11, 8);
-        makeBoardGreen(win, puzzle);
-        setGradeOutput(win ? `You Win! Your time was ${timeAtWin}` : `You Lose! Your time was ${timeAtWin}`);
-        setGradeModal(true);
-        submitTime(win);
-    };
-
-    const submitTime = (gameStatus) => {
-        fetch('/api/scores/new/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ didSolve: gameStatus, time: gameTimer }),
-        })
-            .then((response) => response.json())
-            .catch((error) => {
-                console.log(`Error: ${error}`);
-            });
-    };
-
-    const makeBoardGreen = (win, puzzle) => {
-        if (!win) {
-            setCurrentPuzzle(puzzle.map((row) => { return row.map((cell) => { if (!cell.isShown) return { ...cell, color: cell.trueValue === cell.shownValue ? 'Chartreuse' : 'red', isShown: true }; else return cell; }); }));
-        } else {
-            setCurrentPuzzle(puzzle.map((row) => { return row.map((cell) => { return { ...cell, color: 'Chartreuse', isShown: true }; }); }));
-        }
-    };
-
-    const checkBoardState = (updatedPuzzle) => {
-        const allCellsHaveShownValues = updatedPuzzle.flat().every((cell) => { return !isNaN(parseInt(cell.shownValue)); });
-        if (allCellsHaveShownValues) {
-                const allCellsHaveCorrectValues = updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue === cell.trueValue; }); });
-                handleWin(allCellsHaveCorrectValues, updatedPuzzle);
-        }
-    };
-
-    React.useEffect(() => {
-        if (!modalOpen) {
-            const handleKeyDown = (event) => {
-                if (event.key === 'r') {
-                    setResetModal(!resetModal);
-                }
-            };
-            window.addEventListener('keydown', handleKeyDown);
-            return () => {
-                window.removeEventListener('keydown', handleKeyDown);
-            };
-        };
-    }, [resetModal, modalOpen]);
+    }, [currentCell, currentPuzzle, writeMode, setCell, handleEndGame]);
 
     React.useEffect(() => {
         if (!modalOpen) {
@@ -228,17 +200,15 @@ const GameBoard = (dataCrate) => {
                 if (event.key === 'e') {
                     shiftWriteModes(3);
                 }
+                if (event.key === 'r') {
+                    setResetModal(!resetModal);
+                }
             };
             window.addEventListener('keydown', handleKeyDown);
             return () => {
                 window.removeEventListener('keydown', handleKeyDown);
             };
-        };
-    }, [modalOpen, shiftWriteModes]);
-
-
-    React.useEffect(() => {
-        if (modalOpen) {
+        } else {
             const handleKeyPress = (event) => {
                 if (event.key >= 1 && event.key <= 9) {
                     handleModalSubmit(parseInt(event.key));
@@ -249,7 +219,7 @@ const GameBoard = (dataCrate) => {
                 document.removeEventListener('keydown', handleKeyPress);
             };
         }
-    });
+    }, [modalOpen, shiftWriteModes, resetModal, handleModalSubmit]);
 
     React.useEffect(() => {
         if (gameHasStarted) {
