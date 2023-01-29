@@ -158,6 +158,50 @@ const GameBoard = (dataCrate) => {
         };
     }, [gameTimer]);
 
+    const checkBoard = React.useCallback((puzzle) => {
+        const puzzleArrayMatrix = puzzle.map((row) => { return row.map((cell) => { return cell.shownValue; }); });
+        const isSolved = puzzleArrayMatrix.every((row) => { return row.every((cell) => { return cell !== '⠀'; }); });
+        if (isSolved) {
+            const rowCheck = puzzleArrayMatrix.every((row) => {
+                return row.every((cell) => {
+                    return row.filter((value) => { return value === cell; }).length === 1;
+                });
+            }
+            );
+            const columnCheck = puzzleArrayMatrix.every((row, rowIndex) => {
+                return row.every((cell, cellIndex) => {
+                    return puzzleArrayMatrix.filter((value) => { return value[cellIndex] === cell; }).length === 1;
+                });
+            }
+            );
+            const boxCheck = puzzleArrayMatrix.every((row, rowIndex) => {
+                return row.every((cell, cellIndex) => {
+                    const boxRow = Math.floor(rowIndex / 3) * 3;
+                    const boxColumn = Math.floor(cellIndex / 3) * 3;
+                    const boxValues = [];
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 3; j++) {
+                            boxValues.push(puzzleArrayMatrix[boxRow + i][boxColumn + j]);
+                        };
+                    };
+                    console.log(boxValues);
+                    return boxValues.every((value) => {
+                        return boxValues.filter((boxValue) => { return boxValue === value; }).length === 1;
+                    });
+                }
+                );
+            }
+            );
+            console.log(rowCheck, columnCheck, boxCheck);
+            if (rowCheck && columnCheck && boxCheck) {
+                handleEndGame(true, puzzle);
+            } else {
+                handleEndGame(false, puzzle);
+            };
+        };
+    }, [handleEndGame]);
+    
+
     const handleModalSubmit = React.useCallback((val) => {
         setGameHasStarted(true);
         if (writeMode === 1) {
@@ -169,9 +213,7 @@ const GameBoard = (dataCrate) => {
                 });
                 setCell(val, updatedPuzzle);
                 setCurrentCellNotes(' ');
-                if (updatedPuzzle.flat().every((cell) => { return !isNaN(parseInt(cell.shownValue)); })) {
-                    handleEndGame(updatedPuzzle.every((row) => { return row.every((cell) => { return cell.shownValue === cell.trueValue; }); }), updatedPuzzle);
-                }
+                checkBoard(updatedPuzzle);
             } else {
                 const updatedPuzzle = currentPuzzle.map((row, rowIndex) => {
                     return row.map((cell, cellIndex) => {
@@ -198,7 +240,7 @@ const GameBoard = (dataCrate) => {
         } else if (writeMode === 3) {
             console.log("how did you get here?")
         }
-    }, [currentCell, currentPuzzle, writeMode, setCell, handleEndGame]);
+    }, [currentCell, currentPuzzle, writeMode, setCell, checkBoard]);
 
     React.useEffect(() => {
         if (!modalOpen) {
