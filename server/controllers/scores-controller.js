@@ -37,7 +37,8 @@ module.exports = {
     },
     topTenScores: async (req, res) => {
         try {
-            const scores = await Scores.find().sort({ time: 1 }).limit(10);
+                        // only return scores from scores that won (didSolve === true)
+            const scores = await Scores.find({ didSolve: true }).sort({ time: 1 }).limit(10);
             res.status(200).json({ message: 'Top ten scores retrieved successfully', scores });
         } catch (error) {
             res.status(500).json({ message: 'Error retrieving top ten scores', error });
@@ -45,7 +46,7 @@ module.exports = {
     },
     todaysTopTenScores: async (req, res) => {
         try {
-            const scores = await Scores.find().sort({ time: 1 }).where('timestamp').gte(new Date().setHours(0, 0, 0, 0)).limit(10);
+            const scores = await Scores.find({ didSolve: true }).sort({ time: 1 }).where('timestamp').gte(new Date().setHours(0, 0, 0, 0)).limit(10);
             res.status(200).json({ message: 'Top ten scores retrieved successfully', scores });
         }
         catch (error) {
