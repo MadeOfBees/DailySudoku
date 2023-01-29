@@ -37,6 +37,9 @@ const LeaderBoard = () => {
     }, []);
 
     useEffect(() => {
+        if (!localStorage.getItem('scores')) {
+            return;
+        }
         const scores = JSON.parse(localStorage.getItem('scores'));
         const formatedScores = scores.map((score) => {
             const time = (score.time / 60).toFixed(0) + ':' + ((score.time % 60) < 10 ? '0' + (score.time % 60) : (score.time % 60));
