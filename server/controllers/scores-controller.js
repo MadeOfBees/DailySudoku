@@ -37,7 +37,6 @@ module.exports = {
     },
     topTenScores: async (req, res) => {
         try {
-                        // only return scores from scores that won (didSolve === true)
             const scores = await Scores.find({ didSolve: true }).sort({ time: 1 }).limit(10);
             res.status(200).json({ message: 'Top ten scores retrieved successfully', scores });
         } catch (error) {

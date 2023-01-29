@@ -184,7 +184,6 @@ const GameBoard = (dataCrate) => {
                             boxValues.push(puzzleArrayMatrix[boxRow + i][boxColumn + j]);
                         };
                     };
-                    console.log(boxValues);
                     return boxValues.every((value) => {
                         return boxValues.filter((boxValue) => { return boxValue === value; }).length === 1;
                     });
@@ -192,7 +191,6 @@ const GameBoard = (dataCrate) => {
                 );
             }
             );
-            console.log(rowCheck, columnCheck, boxCheck);
             if (rowCheck && columnCheck && boxCheck) {
                 handleEndGame(true, puzzle);
             } else {
