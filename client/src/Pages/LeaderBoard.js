@@ -21,7 +21,7 @@ const LeaderBoard = () => {
         fetchScores('api/scores/top')
             .then((data) => {
                 const formatedScores = data.scores.map((score) => {
-                    const time = (score.time / 60).toFixed(0) + ':' + ((score.time % 60) < 10 ? '0' + (score.time % 60) : (score.time % 60));
+                    const time = (score.time > 60 ? (score.time / 60).toFixed(0) : '0')+ ':' + ((score.time % 60) < 10 ? '0' + (score.time % 60) : (score.time % 60));
                     return { ...score, time };
                 });
                 setTopAllTime(formatedScores);
@@ -29,7 +29,7 @@ const LeaderBoard = () => {
         fetchScores('api/scores/todaysTop')
             .then((data) => {
                 const formatedScores = data.scores.map((score) => {
-                    const time = (score.time / 60).toFixed(0) + ':' + ((score.time % 60) < 10 ? '0' + (score.time % 60) : (score.time % 60));
+                    const time = (score.time > 60 ? (score.time / 60).toFixed(0) : '0')+ ':' + ((score.time % 60) < 10 ? '0' + (score.time % 60) : (score.time % 60));
                     return { ...score, time };
                 });
                 setTopToday(formatedScores);
