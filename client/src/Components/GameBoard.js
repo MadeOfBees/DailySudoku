@@ -37,8 +37,7 @@ const GameBoard = (dataCrate) => {
     const drawCell = (cell, cellIndex, rowIndex, textSize, textColor) => {
         const noteTextSize = (window.innerWidth > 900) ? '.9rem' : (window.innerWidth > 550) ? '.7REM' : (window.innerWidth > 375) ? '.5REM' : '.27REM';
         const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
-        const colorStep1 = cell.notes ? theme.palette.warning.main : theme.palette.primary.main;
-        const color = !cell.isShown ? colorStep1 : cell.color ? cell.color : textColor;
+        const color = cell.notes ? theme.palette.warning.main : !cell.isShown ? theme.palette.primary.main : cell.color ? cell.color : textColor;
         const notesArray = cell.notes ? parseInt(cell.notes).toString().split('') : [];
         if (notesArray.length === 0) {
             return (
@@ -64,17 +63,15 @@ const GameBoard = (dataCrate) => {
         const divsize = (window.innerWidth > 900) ? '650px' : (window.innerWidth > 550) ? '500px' : (window.innerWidth > 375) ? '350px' : '275px';
         const textSize = (window.innerWidth > 900) ? '2.8em' : (window.innerWidth > 550) ? '2em' : (window.innerWidth > 375) ? '1.3em' : '1.1em';
         const boardCrayon = theme.palette.mode === 'dark' ? "DarkGray" : "black";
-        const thinBorder = `thin solid ${boardCrayon}`
-        const thickBorder = `thick solid ${boardCrayon}`
         return (
             <main>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gridTemplateRows: 'repeat(9, 1fr)', gridColumnGap: 0, gridRowGap: 0, width: divsize, height: divsize, border: thickBorder }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gridTemplateRows: 'repeat(9, 1fr)', gridColumnGap: 0, gridRowGap: 0, width: divsize, height: divsize, border: `thick solid ${boardCrayon}` }}>
                     {currentPuzzle.flat().map((cell, index) => {
                         const rowIndex = Math.floor(index / 9);
                         const cellIndex = index % 9;
                         const cellName = `${String.fromCharCode(65 + rowIndex)}${cellIndex + 1}`;
                         return (
-                            <div key={index} id={cellName} style={{ border: thinBorder, borderRight: (cellIndex === 2 || cellIndex === 5) ? thickBorder : thinBorder, borderBottom: (rowIndex === 2 || rowIndex === 5) ? thickBorder : thinBorder }} onClick={() => { cellChangeModal(cellName); }}>
+                            <div key={index} id={cellName} style={{ border: `thin solid ${boardCrayon}`, borderRight: (cellIndex === 2 || cellIndex === 5) ? `thick solid ${boardCrayon}` : `thin solid ${boardCrayon}`, borderBottom: (rowIndex === 2 || rowIndex === 5) ? `thick solid ${boardCrayon}` : `thin solid ${boardCrayon}` }} onClick={() => { cellChangeModal(cellName); }}>
                                 {drawCell(cell, cellIndex, rowIndex, textSize, boardCrayon)}
                             </div>
                         );
@@ -112,7 +109,6 @@ const GameBoard = (dataCrate) => {
             }
         };
     };
-    
     const setCell = React.useCallback((val, updatedPuzzle) => {
         setCurrentPuzzle(updatedPuzzle);
         if (writeMode === 1) {
@@ -147,6 +143,19 @@ const GameBoard = (dataCrate) => {
             .catch((error) => {
                 console.log(`Error: ${error}`);
             });
+        const scores = JSON.parse(localStorage.getItem('scores'));
+        if (win) {
+            if (scores.length < 10) {
+                scores.push({ time: gameTimer, date: new Date() });
+                scores.sort((a, b) => { return a.time - b.time; });
+            } else {
+                if (gameTimer < scores[9].time) {
+                    scores[9] = { time: gameTimer, date: new Date() };
+                    scores.sort((a, b) => { return a.time - b.time; });
+                };
+            };
+            localStorage.setItem('scores', JSON.stringify(scores));
+        };
     }, [gameTimer]);
 
     const handleModalSubmit = React.useCallback((val) => {

@@ -1,4 +1,6 @@
 import GitHubIcon from '@mui/icons-material/GitHub';
+import Button from '@mui/material/Button';
+import { Link } from 'react-router-dom';
 
 function greetings() {
   if (new Date().getHours() < 12) { return 'morning'; }
@@ -10,7 +12,7 @@ function AboutUs() {
   return (
     <div className="AboutUs">
       <h1>Good {greetings()}!</h1>
-      <h3>Welcome to our site's closed Alpha!</h3>
+      <Button component={Link} to="/LeaderBoard" variant="contained" color="primary" size="large" sx={{ m: 1 }}>LeaderBoard (still in testing phase)</Button>
       <h3>The rules of Sudoku:</h3>
       <ul>
         <li>A Sudoku puzzle consists of a 9x9 grid, with some of the squares already filled in with numbers. The goal is to fill in the remaining squares with numbers from 1 to 9 in a way that satisfies the following rules:</li>

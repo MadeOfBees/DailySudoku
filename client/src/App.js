@@ -1,5 +1,6 @@
 import Home from './Pages/Home';
 import Rules from './Pages/Rules';
+import LeaderBoard from './Pages/LeaderBoard';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
@@ -39,6 +40,10 @@ function App() {
             <Route
               path="/Rules"
               element={<Rules />}
+            />
+            <Route
+              path="/LeaderBoard"
+              element={<LeaderBoard />}
             />
           </Routes>
         </div>
