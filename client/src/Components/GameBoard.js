@@ -159,9 +159,7 @@ const GameBoard = (dataCrate) => {
     }, [gameTimer]);
 
     const checkBoard = React.useCallback((puzzle) => {
-        if (!puzzle.every((row) => { return row.every((cell) => {return !isNaN(cell.shownValue); }); })) {
-            return;
-        };
+        if (puzzle.some((row) => { return row.some((cell) => { return !parseInt(cell.shownValue) > 0 }); })) {return};
         const puzzleArrayMatrix = puzzle.map((row) => { return row.map((cell) => { return cell.shownValue; }); });
         const isSolved = puzzleArrayMatrix.every((row) => { return row.every((cell) => { return cell !== '⠀'; }); });
         if (isSolved) {
@@ -201,7 +199,6 @@ const GameBoard = (dataCrate) => {
             };
         };
     }, [handleEndGame]);
-    
 
     const handleModalSubmit = React.useCallback((val) => {
         setGameHasStarted(true);
