@@ -77,5 +77,31 @@ module.exports = {
         else {
             res.status(401).json({ message: 'Unauthorized user, access denied.' });
         }
+    },
+    seeAllUserScores: async (req, res) => {
+        if (req.body.password === process.env.SPASSWORD) {
+            try {
+                const scores = await Scores.find({ userID: req.params.id });
+                res.status(200).json({ message: 'Scores retrieved successfully', scores });
+            } catch (error) {
+                res.status(500).json({ message: 'Error retrieving scores', error });
+            }
+        }
+        else {
+            res.status(401).json({ message: 'Unauthorized user, access denied.' });
+        }
+    },
+    deleteAllByUser: async (req, res) => {
+        if (req.body.password === process.env.SPASSWORD) {
+            try {
+                const scores = await Scores.deleteMany({ userID: req.params.id });
+                res.status(200).json({ message: 'Scores deleted successfully', scores });
+            } catch (error) {
+                res.status(500).json({ message: 'Error deleting scores', error });
+            }
+        }
+        else {
+            res.status(401).json({ message: 'Unauthorized user, access denied.' });
+        }   
     }
 }

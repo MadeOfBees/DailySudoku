@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import ContactPageIcon from '@mui/icons-material/ContactPage';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -19,6 +20,7 @@ function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = useTheme(prefersDarkMode);
   const colorMode = React.useContext(ColorModeContext);
+  const [homeShown, setHomeShown] = React.useState(false);
   return (
     <div>
       <CssBaseline />
@@ -49,8 +51,8 @@ function App() {
         </div>
         <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0}} elevation={3}>
         <BottomNavigation showLabels>
-          <BottomNavigationAction component={Link} to="/Rules" label="How to Play" icon={<ContactPageIcon />} />
-          <BottomNavigationAction component={Link} to="/DailySudoku" label="Home" icon={<HomeIcon />} />
+          <BottomNavigationAction component={Link} to="/Rules" label="How to Play" icon={<ContactPageIcon />} onClick={() => setHomeShown(true)} />
+          <BottomNavigationAction component={Link} to={homeShown ? "/DailySudoku" : "/LeaderBoard"} label={homeShown ? "Home" : "leaderBoard"} icon={homeShown ? <HomeIcon /> : <FormatListNumberedIcon />} onClick={() => setHomeShown(!homeShown)} />
           <BottomNavigationAction onClick={colorMode.toggleColorMode} label="Toggle Dark-Mode" icon={theme.palette.mode === 'dark' ? <ToggleOffIcon /> : <ToggleOnIcon />} />
         </BottomNavigation>
         </Paper>

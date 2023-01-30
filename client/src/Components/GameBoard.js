@@ -123,6 +123,48 @@ const GameBoard = (dataCrate) => {
         };
     }, [currentCellNotes, handleModalClose, writeMode]);
 
+    const IDTheUser = React.useCallback(() => {
+        if (!localStorage.getItem('userID')) {
+            const fetchUserID = async () => {
+                const response = await fetch('/api/users/new/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const data = await response.json();
+                localStorage.setItem('userID', data.newUser._id);
+                return Promise.resolve(data.newUser._id);
+            };
+            return fetchUserID();
+        } else {
+            const userID = localStorage.getItem('userID');
+            const fetchUserID = async () => {
+                const response = await fetch(`/api/users/isValid/${userID}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const data = await response.json();
+                if (data.valid) {
+                    return Promise.resolve(userID);
+                } else {
+                    const response = await fetch('/api/users/new/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    const data = await response.json();
+                    localStorage.setItem('userID', data.newUser._id);
+                    return Promise.resolve(data.newUser._id);
+                }
+            };
+            return fetchUserID();
+        }
+    }, []);
+
     const handleEndGame = React.useCallback((win, puzzle) => {
         if (!win) {
             setCurrentPuzzle(puzzle.map((row) => { return row.map((cell) => { if (!cell.isShown) return { ...cell, color: cell.trueValue === cell.shownValue ? 'Chartreuse' : 'red', isShown: true }; else return cell; }); }));
@@ -132,18 +174,20 @@ const GameBoard = (dataCrate) => {
         const timeAtWin = new Date(gameTimer * 1000).toISOString().substr(11, 8);
         setGradeOutput(win ? `You Win! Your time was ${timeAtWin}` : `You Lose! Your time was ${timeAtWin}`);
         setGradeModal(true);
-        fetch('/api/scores/new/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ didSolve: win, time: gameTimer }),
-        })
-            .then((response) => response.json())
-            .catch((error) => {
-                console.log(`Error: ${error}`);
-            });
-        const scores = JSON.parse(localStorage.getItem('scores'));
+        IDTheUser().then((userID) => {
+            fetch('/api/scores/new/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ didSolve: win, time: gameTimer, userID: userID }),
+            })
+                .then((response) => response.json())
+                .catch((error) => {
+                    console.log(`Error: ${error}`);
+                });
+        });
+        const scores = JSON.parse(localStorage.getItem('scores')) || [];
         if (win) {
             if (scores.length < 10) {
                 scores.push({ time: gameTimer, date: new Date() });
@@ -156,13 +200,12 @@ const GameBoard = (dataCrate) => {
             };
             localStorage.setItem('scores', JSON.stringify(scores));
         };
-    }, [gameTimer]);
+    }, [gameTimer, IDTheUser]);
 
     const checkBoard = React.useCallback((puzzle) => {
-        if (puzzle.some((row) => { return row.some((cell) => { return !parseInt(cell.shownValue) > 0 }); })) {return};
+        if (puzzle.some((row) => { return row.some((cell) => { return !parseInt(cell.shownValue) > 0 }); })) { return };
         const puzzleArrayMatrix = puzzle.map((row) => { return row.map((cell) => { return cell.shownValue; }); });
-        const isSolved = puzzleArrayMatrix.every((row) => { return row.every((cell) => { return cell !== '⠀'; }); });
-        if (isSolved) {
+        if (puzzleArrayMatrix.every((row) => { return row.every((cell) => { return cell !== '⠀'; }); })) {
             const rowCheck = puzzleArrayMatrix.every((row) => {
                 return row.every((cell) => {
                     return row.filter((value) => { return value === cell; }).length === 1;
@@ -177,12 +220,10 @@ const GameBoard = (dataCrate) => {
             );
             const boxCheck = puzzleArrayMatrix.every((row, rowIndex) => {
                 return row.every((cell, cellIndex) => {
-                    const boxRow = Math.floor(rowIndex / 3) * 3;
-                    const boxColumn = Math.floor(cellIndex / 3) * 3;
                     const boxValues = [];
                     for (let i = 0; i < 3; i++) {
                         for (let j = 0; j < 3; j++) {
-                            boxValues.push(puzzleArrayMatrix[boxRow + i][boxColumn + j]);
+                            boxValues.push(puzzleArrayMatrix[(Math.floor(rowIndex / 3) * 3) + i][(Math.floor(cellIndex / 3) * 3) + j]);
                         };
                     };
                     return boxValues.every((value) => {
@@ -278,7 +319,6 @@ const GameBoard = (dataCrate) => {
             return () => clearInterval(timer);
         }
     }, [gameHasStarted, gameTimer]);
-
 
     return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '5%' }}>

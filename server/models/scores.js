@@ -9,6 +9,10 @@ const scoresSchema = new Schema({
         type: Number,
         required: true
     },
+    userID: {
+        type: String,
+        required: true
+    },
     timestamp: {
         type: Date,
         default: Date.now
