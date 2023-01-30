@@ -159,6 +159,9 @@ const GameBoard = (dataCrate) => {
     }, [gameTimer]);
 
     const checkBoard = React.useCallback((puzzle) => {
+        if (!puzzle.every((row) => { return row.every((cell) => {return !isNaN(cell.shownValue); }); })) {
+            return;
+        };
         const puzzleArrayMatrix = puzzle.map((row) => { return row.map((cell) => { return cell.shownValue; }); });
         const isSolved = puzzleArrayMatrix.every((row) => { return row.every((cell) => { return cell !== '⠀'; }); });
         if (isSolved) {
