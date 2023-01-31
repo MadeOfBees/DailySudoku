@@ -45,10 +45,12 @@ module.exports = {
     },
     todaysTopTenScores: async (req, res) => {
         try {
-            const scores = await Scores.find({ didSolve: true }).sort({ time: 1 }).where('timestamp').gte(new Date().setHours(0, 0, 0, 0)).limit(10);
+            const currentDate = new Date();
+            const offset = -5;
+            const estTime = new Date(currentDate.getTime() + offset * 60 * 60 * 1000);
+            const scores = await Scores.find({ didSolve: true }).sort({ time: 1 }).where('timestamp').gte(new Date(estTime.setHours(0, 0, 0, 0))).limit(10);
             res.status(200).json({ message: 'Top ten scores retrieved successfully', scores });
-        }
-        catch (error) {
+        } catch (error) {
             res.status(500).json({ message: 'Error retrieving top ten scores', error });
         }
     },
