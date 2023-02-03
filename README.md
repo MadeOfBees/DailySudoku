@@ -8,7 +8,7 @@ Click the deployment link: https://daily-global-sudoku.herokuapp.com/ to navigat
 
 ## Report an issue:
 
-Yell loudly describing your your bug and how to replicate the issue.
+Contact me at imMadeOfBees@gmail.com explaining the issue and how to replicate it.
 
 ## Support me:
 
