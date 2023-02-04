@@ -1,5 +1,7 @@
 # Daily Sudoku alpha v0.8.1
 
+![Screenshot 2023-02-04 123804](https://user-images.githubusercontent.com/9198297/216781602-14756b53-1e43-4918-ad5a-bac6f415adac.jpg)
+
 A simple javascript port of the classic game Sudoku, made with materialUI and react that updates daily using MongoDB and Heroku.
 
 ## "Installation"/Instructions:
