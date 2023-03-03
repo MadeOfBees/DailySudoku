@@ -21,7 +21,7 @@ app.use(routes);
 
 const putPuzzleInDB = async () => {
   const reqBody = { password: process.env.SPASSWORD };
-  const reqParams = { num: 42 };
+  const reqParams = { num: 40 };
   const req = { body: reqBody, params: reqParams };
   const res = { status: (code) => { return { json: (message) => { console.log('Puzzle created successfully and added to DB'); } } } };
   try {
