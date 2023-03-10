@@ -1,4 +1,4 @@
-A simple javascript port of the classic game Sudoku, made with materialUI and react that updates daily using MongoDB and Heroku.
+A full MERN stack javascript port of the classic game Sudoku, made with materialUI and react that updates daily using MongoDB and Heroku.
 
 ## "Installation"/Instructions:
 
