@@ -85,6 +85,7 @@ const GameBoard = (dataCrate) => {
                         <Button style={{ backgroundColor: (writeMode === 2) ? theme.palette.warning.main : 'grey', color: (writeMode === 2) ? theme.palette.mode === 'dark' ? 'black' : 'white' : theme.palette.mode === 'dark' ? 'white' : 'black' }} onClick={() => { shiftWriteModes(2) }} aria-label={writeMode === 2 ? 'Pen Mode On' : 'Pen Mode Off'}><CreateIcon /></Button>
                         <div style={{ width: '20%' }} />
                         <Button style={{ backgroundColor: (writeMode === 3) ? theme.palette.mode === 'dark' ? '#FFC0DB' : '#ff80ab' : 'grey', color: (writeMode === 3) ? theme.palette.mode === 'dark' ? 'black' : 'white' : theme.palette.mode === 'dark' ? 'white' : 'black' }} onClick={() => { shiftWriteModes(3); }}  aria-label={writeMode === 3 ? 'Eraser Mode On' : 'Eraser Mode Off'}><EraserIcon /></Button>
+                    </div>
                 </div>
             </main>
         );
